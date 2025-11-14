@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <!-- Fondo -->
+    <ImageView
+        android:id="@+id/fondo"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:src="@drawable/fondo_pantalla_quiz"
+        android:scaleType="centerCrop"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+    <!-- Texto de la pregunta -->
+    <TextView
+        android:id="@+id/texto_pregunta"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Pregunta 1"
+        android:textSize="28sp"
+        android:textColor="#3A3A9F"
+        android:textStyle="bold"
+        android:fontFamily="@font/potta_one"
+        android:layout_marginTop="50dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+    <!-- Barra de progreso -->
+    <ProgressBar
+        android:id="@+id/barra_progreso"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="1000dp"
+        android:layout_height="12dp"
+        android:progress="40"
+        android:max="100"
+        android:progressDrawable="@drawable/estilo_barra_progreso"
+        android:layout_marginTop="20dp"
+        app:layout_constraintTop_toBottomOf="@id/texto_pregunta"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+    <!-- Botón del altavoz -->
+    <ImageView
+        android:id="@+id/boton_sonido"
+        android:layout_width="210dp"
+        android:layout_height="210dp"
+        android:src="@drawable/icono_sonido"
+        android:contentDescription="Reproducir sonido"
+        android:clickable="true"
+        android:focusable="true"
+        android:layout_marginTop="40dp"
+        app:layout_constraintTop_toBottomOf="@id/barra_progreso"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+    <!-- Contenedor para los botones de animales -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/contenedor_botones"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="30dp"
+        app:layout_constraintTop_toBottomOf="@id/boton_sonido"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <!-- Botón 1 (perro) -->
+        <ImageButton
+            android:id="@+id/boton_perro"
+            android:layout_width="350dp"
+            android:layout_height="350dp"
+            android:src="@drawable/animal_perro"
+            android:background="@drawable/fondo_boton_animal"
+            android:scaleType="centerInside"
+            android:contentDescription="Perro"
+            app:backgroundTint="@null"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/boton_gato"
+            android:layout_marginEnd="30dp"
+            app:layout_constraintHorizontal_chainStyle="packed"/>
+
+        <!-- Botón 2 (gato) -->
+        <ImageButton
+            android:id="@+id/boton_gato"
+            android:layout_width="350dp"
+            android:layout_height="350dp"
+            android:src="@drawable/animal_gato"
+            android:background="@drawable/fondo_boton_animal"
+            android:scaleType="centerInside"
+            android:contentDescription="Gato"
+            app:backgroundTint="@null"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toEndOf="@id/boton_perro"
+            android:layout_marginEnd="30dp"
+            app:layout_constraintEnd_toStartOf="@id/boton_conejo"/>
+
+        <!-- Botón 3 (rana/conejo) -->
+        <ImageButton
+            android:id="@+id/boton_conejo"
+            android:layout_width="350dp"
+            android:layout_height="350dp"
+            android:src="@drawable/animal_rana"
+            android:background="@drawable/fondo_boton_animal"
+            android:scaleType="centerInside"
+            android:contentDescription="Conejo"
+            app:backgroundTint="@null"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toEndOf="@id/boton_gato"
+            app:layout_constraintEnd_toEndOf="parent"/>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

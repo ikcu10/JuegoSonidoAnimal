@@ -1,0 +1,73 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <!-- Fondo -->
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:src="@drawable/fondo_pantalla_login"
+        android:scaleType="centerCrop" />
+
+    <!-- Contenedor vertical para los elementos -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:gravity="center_horizontal"
+        android:padding="32dp">
+
+        <!-- Frase -->
+        <TextView
+            android:id="@+id/texto_pregunta_nombre"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="¿Cuál es tu nombre?"
+            android:textSize="70dp"
+            android:textColor="#5A4631"
+            android:layout_marginTop="130dp"
+            android:layout_marginBottom="20dp"
+            android:fontFamily="@font/baloo2"
+            android:textStyle="bold"/>
+
+        <!-- Campo de texto para introducir nombre -->
+        <EditText
+            android:id="@+id/entrada_nombre"
+            android:layout_width="630dp"
+            android:layout_height="wrap_content"
+            android:hint="Escribe tu nombre"
+            android:inputType="textPersonName"
+            android:background="@drawable/caja_texto"
+            android:padding="30dp"
+            android:layout_marginBottom="24dp"
+            android:textSize="50dp"/>
+
+        <!-- Botón redondo con "+" -->
+        <Button
+            android:id="@+id/boton_mas"
+            android:layout_width="180dp"
+            android:layout_height="180dp"
+            android:text="+"
+            android:textSize="100dp"
+            android:background="@drawable/boton_redondo"
+            android:textColor="#FFFFFF"
+            android:layout_marginBottom="40dp"
+            app:backgroundTint="@null"/>
+
+        <!-- Botón ¡Jugar! -->
+        <Button
+            android:id="@+id/boton_comenzar"
+            android:layout_width="250dp"
+            android:layout_height="100dp"
+            android:layout_gravity="center"
+            android:background="@drawable/boton_inicio"
+            app:backgroundTint="@null"
+            android:text="¡Jugar!"
+            android:textColor="#FFFFFF"
+            android:textSize="50sp"
+            android:fontFamily="@font/potta_one"/>
+
+    </LinearLayout>
+
+</FrameLayout>
