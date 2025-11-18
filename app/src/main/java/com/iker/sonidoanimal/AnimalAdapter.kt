@@ -13,6 +13,14 @@ class AnimalAdapter(
     private val onAnimalSelected: (Animal) -> Unit
                    ) : RecyclerView.Adapter<AnimalAdapter.AnimalViewHolder>() {
 
+
+    private var cardSize = 0
+
+    fun setCardSize(size: Int) {
+        cardSize = size
+        notifyDataSetChanged()
+    }
+
     class AnimalViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val cardView: CardView = itemView.findViewById(R.id.cardAnimal)
         val imageView: ImageView = itemView.findViewById(R.id.ivAnimal)
@@ -26,6 +34,12 @@ class AnimalAdapter(
 
     override fun onBindViewHolder(holder: AnimalViewHolder, position: Int) {
         val animal = animals[position]
+
+        // ACTUALIZAR TAMAÑO DE LA CARD
+        val layoutParams = holder.cardView.layoutParams as ViewGroup.MarginLayoutParams
+        layoutParams.width = cardSize
+        layoutParams.height = cardSize
+        holder.cardView.layoutParams = layoutParams
 
         holder.imageView.setImageResource(animal.imageRes)
         updateCardAppearance(holder, animal)

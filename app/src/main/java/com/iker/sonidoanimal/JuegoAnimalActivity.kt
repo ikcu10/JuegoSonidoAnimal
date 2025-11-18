@@ -8,6 +8,7 @@ import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 
@@ -24,7 +25,7 @@ class JuegoAnimalesActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        setContentView(R.layout.activity_sonido_animal)
 
         setupViews()
         setupLevel(currentLevel)
@@ -36,8 +37,8 @@ class JuegoAnimalesActivity : AppCompatActivity() {
         progressBar = findViewById(R.id.barra_progreso)
         btnSound = findViewById(R.id.boton_sonido)
 
-        recyclerView.layoutManager =
-            LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
+        // recyclerView.layoutManager =
+        //    LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
 
         btnSound.setOnClickListener {
             // Lógica sonido posterior
@@ -46,12 +47,34 @@ class JuegoAnimalesActivity : AppCompatActivity() {
 
     private fun setupLevel(level: Int) {
         val animals = getAnimalsForLevel(level)
-        isInteractionEnabled = true
 
+        // CONFIGURAR GRID - 4 CARDS EN 1 FILA
+        recyclerView.layoutManager = GridLayoutManager(this,
+                                                       when (animals.size) {
+                                                           2 -> 2
+                                                           3 -> 3
+                                                           4 -> 4  // ← CAMBIO: 4 columnas en 1 fila
+                                                           else -> 2
+                                                       }
+                                                      )
+
+        isInteractionEnabled = true
         adapter = AnimalAdapter(animals) { selectedAnimal ->
             if (isInteractionEnabled) {
                 handleAnimalSelection(selectedAnimal, animals)
             }
+        }
+
+        // CALCULAR TAMAÑO - 4 CARDS MÁS PEQUEÑAS
+        recyclerView.post {
+            val containerWidth = recyclerView.width - recyclerView.paddingStart - recyclerView.paddingEnd
+            val cardSize = when (animals.size) {
+                2 -> (containerWidth / 2.9).toInt() // Grandes
+                3 -> (containerWidth / 3.5).toInt() // Medianas
+                4 -> (containerWidth / 4.4).toInt() // ← PEQUEÑAS para 4 en línea
+                else -> (containerWidth / 2.2).toInt()
+            }
+            adapter.setCardSize(cardSize)
         }
 
         recyclerView.adapter = adapter
@@ -62,54 +85,64 @@ class JuegoAnimalesActivity : AppCompatActivity() {
         return when (level) {
             1 -> listOf(
                 Animal(1, R.drawable.animal_perro, "Perro", R.raw.sonido_perro, true),
-                Animal(2, R.drawable.animal_gato, "Gato", R.raw.sonido_gato)
+                Animal(2, R.drawable.animal_gato, "Gato", R.raw.sonido_perro)
                        )
+
             2 -> listOf(
-                Animal(1, R.drawable.animal_vaca, "León", R.raw.sonido_leon, true),
-                Animal(2, R.drawable.animal_conejo, "Elefante", R.raw.sonido_elefante)
+                Animal(1, R.drawable.animal_vaca, "León", R.raw.sonido_perro, true),
+                Animal(2, R.drawable.animal_conejo, "Elefante", R.raw.sonido_perro)
                        )
+
             3 -> listOf(
-                Animal(1, R.drawable.animal_rana, "Pájaro", R.raw.sonido_pajaro),
-                Animal(2, R.drawable.animal_raton, "Oveja", R.raw.sonido_oveja, true),
-                Animal(3, R.drawable.animal_loro, "Cerdo", R.raw.sonido_cerdo)
+                Animal(1, R.drawable.animal_rana, "Pájaro", R.raw.sonido_perro,true),
+                Animal(2, R.drawable.animal_raton, "Oveja", R.raw.sonido_perro),
+                Animal(3, R.drawable.animal_loro, "Cerdo", R.raw.sonido_perro)
                        )
+
             4 -> listOf(
-                Animal(1, R.drawable.animal_vaca, "Vaca", R.raw.sonido_vaca, true),
-                Animal(2, R.drawable.animal_caballo, "Caballo", R.raw.sonido_caballo),
-                Animal(3, R.drawable.animal_gallina, "Gallina", R.raw.sonido_gallina)
+                Animal(1, R.drawable.animal_cerdo, "Vaca", R.raw.sonido_perro, true),
+                Animal(2, R.drawable.animal_koala, "Caballo", R.raw.sonido_perro),
+                Animal(3, R.drawable.animal_ardilla, "Gallina", R.raw.sonido_perro)
                        )
+
             5 -> listOf(
-                Animal(1, R.drawable.animal_pez, "Pez", R.raw.sonido_pez),
-                Animal(2, R.drawable.animal_tigre, "Tigre", R.raw.sonido_tigre, true),
-                Animal(3, R.drawable.animal_oso, "Oso", R.raw.sonido_oso),
-                Animal(4, R.drawable.animal_mono, "Mono", R.raw.sonido_mono)
+                Animal(1, R.drawable.animal_pato, "Pez", R.raw.sonido_perro, true),
+                Animal(2, R.drawable.animal_oveja, "Tigre", R.raw.sonido_perro),
+                Animal(3, R.drawable.animal_aguila, "Oso", R.raw.sonido_perro),
+                Animal(4, R.drawable.animal_tortuga, "Mono", R.raw.sonido_perro)
                        )
+
             6 -> listOf(
-                Animal(1, R.drawable.animal_serpiente, "Serpiente", R.raw.sonido_serpiente),
-                Animal(2, R.drawable.animal_ardilla, "Ardilla", R.raw.sonido_ardilla),
-                Animal(3, R.drawable.animal_zorro, "Zorro", R.raw.sonido_zorro, true),
-                Animal(4, R.drawable.animal_lobo, "Lobo", R.raw.sonido_lobo)
+                Animal(1, R.drawable.animal_elefante, "Serpiente", R.raw.sonido_perro, true),
+                Animal(2, R.drawable.animal_cabra, "Ardilla", R.raw.sonido_perro),
+                Animal(3, R.drawable.animal_vaca, "Zorro", R.raw.sonido_perro),
+                Animal(4, R.drawable.animal_hamster, "Lobo", R.raw.sonido_perro)
                        )
+
             7 -> listOf(
-                Animal(1, R.drawable.animal_jirafa, "Jirafa", R.raw.sonido_jirafa, true),
-                Animal(2, R.drawable.animal_cebra, "Cebra", R.raw.sonido_cebra),
-                Animal(3, R.drawable.animal_hipopotamo, "Hipopótamo", R.raw.sonido_hipopotamo),
-                Animal(4, R.drawable.animal_cocodrilo, "Cocodrilo", R.raw.sonido_cocodrilo)
+                Animal(1, R.drawable.animal_zorro, "Jirafa", R.raw.sonido_perro, true),
+                Animal(2, R.drawable.animal_girafa, "Cebra", R.raw.sonido_perro),
+                Animal(3, R.drawable.animal_pinguino, "Hipopótamo", R.raw.sonido_perro),
+                Animal(4, R.drawable.animal_rinoceronte, "Cocodrilo", R.raw.sonido_perro)
                        )
+
             8 -> listOf(
-                Animal(1, R.drawable.animal_pinguino, "Pingüino", R.raw.sonido_pinguino),
-                Animal(2, R.drawable.animal_foca, "Foca", R.raw.sonido_foca),
-                Animal(3, R.drawable.animal_ballena, "Ballena", R.raw.sonido_ballena),
-                Animal(4, R.drawable.animal_delfin, "Delfín", R.raw.sonido_delfin, true)
+                Animal(1, R.drawable.animal_cocodrilo, "Pingüino", R.raw.sonido_perro, true),
+                Animal(2, R.drawable.animal_oso_panda, "Foca", R.raw.sonido_perro),
+                Animal(3, R.drawable.animal_koala, "Ballena", R.raw.sonido_perro),
+                Animal(4, R.drawable.animal_oso, "Delfín", R.raw.sonido_perro)
                        )
+
             9 -> listOf(
-                Animal(1, R.drawable.animal_aguila, "Águila", R.raw.sonido_aguila, true),
-                Animal(2, R.drawable.animal_buho, "Búho", R.raw.sonido_buho)
+                Animal(1, R.drawable.animal_perro, "Águila", R.raw.sonido_perro, true),
+                Animal(2, R.drawable.animal_lobo, "Búho", R.raw.sonido_perro)
                        )
+
             10 -> listOf(
-                Animal(1, R.drawable.animal_mariposa, "Mariposa", R.raw.sonido_mariposa),
-                Animal(2, R.drawable.animal_abeja, "Abeja", R.raw.sonido_abeja, true)
+                Animal(1, R.drawable.animal_leon, "Mariposa", R.raw.sonido_perro),
+                Animal(2, R.drawable.animal_tigre, "Abeja", R.raw.sonido_perro, true)
                         )
+
             else -> emptyList()
         }
     }
@@ -125,7 +158,11 @@ class JuegoAnimalesActivity : AppCompatActivity() {
                                                                 setupLevel(currentLevel)
                                                             } else {
                                                                 // Juego completado
-                                                                Toast.makeText(this, "¡Juego completado!", Toast.LENGTH_SHORT).show()
+                                                                Toast.makeText(
+                                                                    this,
+                                                                    "¡Juego completado!",
+                                                                    Toast.LENGTH_SHORT
+                                                                              ).show()
                                                             }
                                                         }, 3000)
         } else {
@@ -133,8 +170,13 @@ class JuegoAnimalesActivity : AppCompatActivity() {
             selectedAnimal.isSelected = true
             Handler(Looper.getMainLooper()).postDelayed({
                                                             // Marcar card como desactivada (gris)
-                                                            selectedAnimal.isSelected = false // Reset para cambiar a gris
-                                                            adapter.notifyItemChanged(allAnimals.indexOf(selectedAnimal))
+                                                            selectedAnimal.isSelected =
+                                                                false // Reset para cambiar a gris
+                                                            adapter.notifyItemChanged(
+                                                                allAnimals.indexOf(
+                                                                    selectedAnimal
+                                                                                  )
+                                                                                     )
                                                         }, 3000)
         }
 
