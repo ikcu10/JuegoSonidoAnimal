@@ -6,5 +6,6 @@ data class Animal (
     val name: String,
     val soundRes: Int,
     var isCorrect: Boolean = false,
-    var isSelected: Boolean = false
+    var isSelected: Boolean = false,
+    var isDisabled: Boolean = false
                   )

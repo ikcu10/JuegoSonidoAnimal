@@ -60,16 +60,16 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"/>
 
-    <!-- REEMPLAZO: RecyclerView en lugar del contenedor fijo -->
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerViewAnimals"
+    <LinearLayout
+        android:id="@+id/contenedorAnimales"
         android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_marginTop="30dp"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center"
         android:padding="16dp"
         app:layout_constraintTop_toBottomOf="@id/boton_sonido"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"/>
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -4,17 +4,17 @@
     android:id="@+id/cardAnimal"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:layout_margin="15dp"
+    android:layout_margin="12dp"
     app:cardCornerRadius="12dp"
     app:cardElevation="8dp"
-    app:cardUseCompatPadding="true">
-
+    app:cardUseCompatPadding="true"
+    app:cardBackgroundColor="@color/card_default_color">
 
     <ImageView
         android:id="@+id/ivAnimal"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@drawable/fondo_boton_animal"
-        android:padding="20dp"
-        android:scaleType="centerInside" />
+        android:scaleType="centerInside"
+
+        android:contentDescription="Imagen del animal"/>
 </androidx.cardview.widget.CardView>

@@ -1,24 +1,29 @@
 package com.iker.sonidoanimal
 
+import android.media.MediaPlayer
+import androidx.cardview.widget.CardView
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 
 class JuegoAnimalesActivity : AppCompatActivity() {
 
-    private lateinit var recyclerView: RecyclerView
+    //private lateinit var recyclerView: RecyclerView
+    private lateinit var contenedorAnimales: LinearLayout
     private lateinit var tvQuestion: TextView
     private lateinit var progressBar: ProgressBar
     private lateinit var btnSound: ImageView
-    private lateinit var adapter: AnimalAdapter
+    //private lateinit var adapter: AnimalAdapter
 
     private var currentLevel = 1
     private var isInteractionEnabled = true
@@ -32,7 +37,8 @@ class JuegoAnimalesActivity : AppCompatActivity() {
     }
 
     private fun setupViews() {
-        recyclerView = findViewById(R.id.recyclerViewAnimals)
+        //recyclerView = findViewById(R.id.recyclerViewAnimals)
+        contenedorAnimales = findViewById(R.id.contenedorAnimales)
         tvQuestion = findViewById(R.id.texto_pregunta)
         progressBar = findViewById(R.id.barra_progreso)
         btnSound = findViewById(R.id.boton_sonido)
@@ -48,36 +54,40 @@ class JuegoAnimalesActivity : AppCompatActivity() {
     private fun setupLevel(level: Int) {
         val animals = getAnimalsForLevel(level)
 
-        // CONFIGURAR GRID - 4 CARDS EN 1 FILA
-        recyclerView.layoutManager = GridLayoutManager(this,
-                                                       when (animals.size) {
-                                                           2 -> 2
-                                                           3 -> 3
-                                                           4 -> 4  // ← CAMBIO: 4 columnas en 1 fila
-                                                           else -> 2
-                                                       }
-                                                      )
-
         isInteractionEnabled = true
-        adapter = AnimalAdapter(animals) { selectedAnimal ->
-            if (isInteractionEnabled) {
-                handleAnimalSelection(selectedAnimal, animals)
-            }
+        // Limpiar el contenedor
+        contenedorAnimales.removeAllViews()
+
+        val anchoPantalla = resources.displayMetrics.widthPixels
+        val sizeCard = when (animals.size) {
+            2 -> anchoPantalla / 3
+            3 -> anchoPantalla / 4
+            4 -> anchoPantalla / 5
+            else -> anchoPantalla / 3
         }
 
-        // CALCULAR TAMAÑO - 4 CARDS MÁS PEQUEÑAS
-        recyclerView.post {
-            val containerWidth = recyclerView.width - recyclerView.paddingStart - recyclerView.paddingEnd
-            val cardSize = when (animals.size) {
-                2 -> (containerWidth / 2.9).toInt() // Grandes
-                3 -> (containerWidth / 3.5).toInt() // Medianas
-                4 -> (containerWidth / 4.4).toInt() // ← PEQUEÑAS para 4 en línea
-                else -> (containerWidth / 2.2).toInt()
+        for (animal in animals) {
+            val card = layoutInflater.inflate(R.layout.item_animal_card, contenedorAnimales, false)
+            val cardView = card.findViewById<CardView>(R.id.cardAnimal)
+            val img = card.findViewById<ImageView>(R.id.ivAnimal)
+
+            img.setImageResource(animal.imageRes)
+
+            val params = LinearLayout.LayoutParams(sizeCard, sizeCard)
+            params.weight = 1f
+            params.marginStart = 16
+            params.marginEnd = 16
+            cardView.layoutParams = params
+
+            cardView.setOnClickListener {
+                if (isInteractionEnabled) {
+                    handleAnimalSelection(animal, animals, cardView)
+                }
             }
-            adapter.setCardSize(cardSize)
+
+            contenedorAnimales.addView(card)
         }
 
-        recyclerView.adapter = adapter
         updateProgress(level)
     }
 
@@ -147,44 +157,66 @@ class JuegoAnimalesActivity : AppCompatActivity() {
         }
     }
 
-    private fun handleAnimalSelection(selectedAnimal: Animal, allAnimals: List<Animal>) {
+    private fun handleAnimalSelection(selectedAnimal: Animal, allAnimals: List<Animal>, cardView: CardView) {
+        if (!isInteractionEnabled) return
+
         isInteractionEnabled = false
+        selectedAnimal.isSelected = true
+
+        val context = this
 
         if (selectedAnimal.isCorrect) {
-            // ACIERTO - Verde y pasar nivel después de 3 segundos
-            Handler(Looper.getMainLooper()).postDelayed({
-                                                            currentLevel++
-                                                            if (currentLevel <= 10) {
-                                                                setupLevel(currentLevel)
-                                                            } else {
-                                                                // Juego completado
-                                                                Toast.makeText(
-                                                                    this,
-                                                                    "¡Juego completado!",
-                                                                    Toast.LENGTH_SHORT
-                                                                              ).show()
-                                                            }
-                                                        }, 3000)
-        } else {
-            // ERROR - Rojo y desactivar card después de 3 segundos
-            selectedAnimal.isSelected = true
-            Handler(Looper.getMainLooper()).postDelayed({
-                                                            // Marcar card como desactivada (gris)
-                                                            selectedAnimal.isSelected =
-                                                                false // Reset para cambiar a gris
-                                                            adapter.notifyItemChanged(
-                                                                allAnimals.indexOf(
-                                                                    selectedAnimal
-                                                                                  )
-                                                                                     )
-                                                        }, 3000)
-        }
+            // ACIERTO: poner verde
+            cardView.setCardBackgroundColor(ContextCompat.getColor(context, R.color.correct_color))
+            cardView.isEnabled = false
 
-        adapter.notifyDataSetChanged()
+            // Reproducir sonido animal + voz "Muy bien hecho"
+            playAnimalSound(selectedAnimal.soundRes)
+            playVoiceCorrect()
+
+            // Pasar al siguiente nivel después de 2-3 segundos
+            Handler(Looper.getMainLooper()).postDelayed({
+                currentLevel++
+                if (currentLevel <= 10) {
+                    setupLevel(currentLevel)
+                } else {
+                    Toast.makeText(context, "¡Juego completado!", Toast.LENGTH_SHORT).show()
+                }
+            }, 2000)
+
+        } else {
+            // ERROR: poner rojo
+            cardView.setCardBackgroundColor(ContextCompat.getColor(context, R.color.wrong_color))
+            cardView.isEnabled = false
+
+            // Reproducir sonido animal (opcional)
+            playAnimalSound(selectedAnimal.soundRes)
+
+            // Después de 2 segundos, poner gris para indicar que ya no se puede seleccionar
+            Handler(Looper.getMainLooper()).postDelayed({
+                cardView.setCardBackgroundColor(ContextCompat.getColor(context, R.color.disabled_color))
+                isInteractionEnabled = true
+            }, 2000)
+        }
     }
 
     private fun updateProgress(level: Int) {
         progressBar.progress = (level * 10)
         tvQuestion.text = "Nivel $level"
     }
+
+
+
+    private fun playAnimalSound(soundRes: Int) {
+        val mediaPlayer = MediaPlayer.create(this, soundRes)
+        mediaPlayer.start()
+        mediaPlayer.setOnCompletionListener { it.release() }
+    }
+
+    private fun playVoiceCorrect() {
+        val mediaPlayer = MediaPlayer.create(this, R.raw.sonido_perro) // tu audio "Muy bien hecho"
+        mediaPlayer.start()
+        mediaPlayer.setOnCompletionListener { it.release() }
+    }
+
 }
