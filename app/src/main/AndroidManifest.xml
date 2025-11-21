@@ -12,13 +12,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.SonidoAnimal">
 
+        <!-- Activity principal que se abre al iniciar -->
         <activity
-            android:name=".MainActivity"
-            android:exported="true" />
-
-        <!-- Cambia SonidoAnimalActivity por JuegoAnimalesActivity -->
-        <activity
-            android:name=".JuegoAnimalesActivity"
+            android:name=".MenuActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -26,7 +22,22 @@
             </intent-filter>
         </activity>
 
+        <!-- JuegoAnimalesActivity solo para navegar desde el menú -->
+        <activity
+            android:name=".JuegoAnimalesActivity"
+            android:exported="true" />
+
+        <!-- LoginActivity -->
         <activity android:name=".LoginActivity" />
+
+        <!-- Pantallas de resultados -->
+        <activity
+            android:name=".ResultadoCorrectoActivity"
+            android:exported="true" />
+
+        <activity
+            android:name=".ResultadoIncorrectoActivity"
+            android:exported="true" />
 
     </application>
 </manifest>

@@ -1,5 +1,6 @@
 package com.iker.sonidoanimal
 
+import android.content.Intent
 import android.media.MediaPlayer
 import androidx.cardview.widget.CardView
 import android.os.Bundle
@@ -32,6 +33,7 @@ class JuegoAnimalesActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_sonido_animal)
 
+        currentLevel = intent.getIntExtra("nivel", 1)
         setupViews()
         setupLevel(currentLevel)
     }
@@ -68,6 +70,8 @@ class JuegoAnimalesActivity : AppCompatActivity() {
             else -> anchoPantalla / 3
         }
 
+        val esReintento = intent.getBooleanExtra("reintento", false)
+
         for (animal in animals) {
             val card = layoutInflater.inflate(R.layout.item_animal_card, contenedorAnimales, false)
             val cardView = card.findViewById<CardView>(R.id.cardAnimal)
@@ -80,6 +84,12 @@ class JuegoAnimalesActivity : AppCompatActivity() {
             params.marginStart = 16
             params.marginEnd = 16
             cardView.layoutParams = params
+
+            // Si es reintento y el animal es el incorrecto, poner gris
+            if (esReintento && !animal.isCorrect) {
+                cardView.setCardBackgroundColor(ContextCompat.getColor(this, R.color.disabled_color))
+                cardView.isEnabled = false
+            }
 
             cardView.setOnClickListener {
                 if (isInteractionEnabled) {
@@ -160,45 +170,34 @@ class JuegoAnimalesActivity : AppCompatActivity() {
     }
 
     private fun handleAnimalSelection(selectedAnimal: Animal, allAnimals: List<Animal>, cardView: CardView) {
-        if (!isInteractionEnabled) return
-
-        isInteractionEnabled = false
-        selectedAnimal.isSelected = true
-
         val context = this
-
         if (selectedAnimal.isCorrect) {
-            // ACIERTO: poner verde
+            // ACIERTO
             cardView.setCardBackgroundColor(ContextCompat.getColor(context, R.color.correct_color))
             cardView.isEnabled = false
-
-            // Reproducir sonido animal + voz "Muy bien hecho"
             playAnimalSound(selectedAnimal.soundRes)
             playVoiceCorrect()
 
-            // Pasar al siguiente nivel después de 2-3 segundos
             Handler(Looper.getMainLooper()).postDelayed({
-                currentLevel++
-                if (currentLevel <= 10) {
-                    setupLevel(currentLevel)
-                } else {
-                    Toast.makeText(context, "¡Juego completado!", Toast.LENGTH_SHORT).show()
-                }
+                val intent =
+                    Intent(this@JuegoAnimalesActivity, ResultadoCorrectoActivity::class.java)
+                intent.putExtra("nivel", currentLevel)
+                startActivity(intent)
+                finish()
             }, 2000)
 
         } else {
-            // ERROR: poner rojo
+            // ERROR
             cardView.setCardBackgroundColor(ContextCompat.getColor(context, R.color.wrong_color))
             cardView.isEnabled = false
-
-            // Reproducir sonido animal (opcional)
             playAnimalSound(selectedAnimal.soundRes)
             playVoiceIncorrect()
 
-            // Después de 2 segundos, poner gris para indicar que ya no se puede seleccionar
             Handler(Looper.getMainLooper()).postDelayed({
-                cardView.setCardBackgroundColor(ContextCompat.getColor(context, R.color.disabled_color))
-                isInteractionEnabled = true
+                val intent = Intent(this@JuegoAnimalesActivity, ResultadoIncorrectoActivity::class.java)
+                intent.putExtra("nivel", currentLevel)
+                startActivity(intent)
+                finish()
             }, 2000)
         }
     }
