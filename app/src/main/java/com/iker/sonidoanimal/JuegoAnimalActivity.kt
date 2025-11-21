@@ -70,7 +70,8 @@ class JuegoAnimalesActivity : AppCompatActivity() {
             else -> anchoPantalla / 3
         }
 
-        val esReintento = intent.getBooleanExtra("reintento", false)
+        val esReintento = intent.getBooleanExtra("reintentar", false)
+        val listaFallos = intent.getIntegerArrayListExtra("listaFallos") ?: arrayListOf()
 
         for (animal in animals) {
             val card = layoutInflater.inflate(R.layout.item_animal_card, contenedorAnimales, false)
@@ -86,7 +87,7 @@ class JuegoAnimalesActivity : AppCompatActivity() {
             cardView.layoutParams = params
 
             // Si es reintento y el animal es el incorrecto, poner gris
-            if (esReintento && !animal.isCorrect) {
+            if (esReintento && listaFallos.contains(animal.id)) {
                 cardView.setCardBackgroundColor(ContextCompat.getColor(this, R.color.disabled_color))
                 cardView.isEnabled = false
             }
@@ -193,9 +194,13 @@ class JuegoAnimalesActivity : AppCompatActivity() {
             playAnimalSound(selectedAnimal.soundRes)
             playVoiceIncorrect()
 
+            val listaFallos = intent.getIntegerArrayListExtra("listaFallos") ?: arrayListOf()
+            listaFallos.add(selectedAnimal.id)
+
             Handler(Looper.getMainLooper()).postDelayed({
                 val intent = Intent(this@JuegoAnimalesActivity, ResultadoIncorrectoActivity::class.java)
                 intent.putExtra("nivel", currentLevel)
+                                                            intent.putIntegerArrayListExtra("listaFallos", listaFallos)
                 startActivity(intent)
                 finish()
             }, 2000)

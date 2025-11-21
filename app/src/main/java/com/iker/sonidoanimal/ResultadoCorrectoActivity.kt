@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import android.widget.Button
+import android.view.View
 
 class ResultadoCorrectoActivity : AppCompatActivity() {
 
@@ -13,9 +14,14 @@ class ResultadoCorrectoActivity : AppCompatActivity() {
         setContentView(R.layout.activity_resultado_correcto)
 
         val nivelActual = intent.getIntExtra("nivel", 1)
+        val nivelMaximo = 10
 
         val btnSiguiente = findViewById<Button>(R.id.btnSiguiente)
         val btnMenu = findViewById<Button>(R.id.btnMenu)
+
+        if (nivelActual == nivelMaximo) {
+            btnSiguiente.visibility = View.GONE
+        }
 
         btnSiguiente.setOnClickListener {
             val siguienteNivel = nivelActual + 1
