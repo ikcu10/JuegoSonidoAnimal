@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <!-- Fondo -->
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:src="@drawable/inicio_fondo"
+        android:scaleType="centerCrop" />
+
+    <!-- Botón centrado -->
+    <Button
+        android:id="@+id/boton_comenzar"
+        android:layout_width="310dp"
+        android:layout_height="140dp"
+        android:layout_gravity="center"
+        android:background="@drawable/boton_inicio"
+        app:backgroundTint="@null"
+        android:text="¡Jugar!"
+        android:textColor="#FFFFFF"
+        android:textSize="70sp"
+        android:fontFamily="@font/potta_one"/>
+
+</FrameLayout>

@@ -1,0 +1,9 @@
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="oval">
+    <!-- Color de relleno -->
+    <solid android:color="#F7D358"/> <!-- Amarillo igual que el grande -->
+    <!-- Borde fino -->
+    <stroke
+        android:width="2dp"
+        android:color="#000000"/> <!-- Negro muy fino -->
+</shape>
