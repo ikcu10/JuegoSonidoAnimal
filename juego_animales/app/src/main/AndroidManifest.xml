@@ -27,6 +27,8 @@
         <activity android:name=".QuizActivity" />
         <activity android:name=".CorrectActivity" />
         <activity android:name=".IncorrectActivity" />
+        <activity android:name=".ResultActivity" />
+
 
 
 

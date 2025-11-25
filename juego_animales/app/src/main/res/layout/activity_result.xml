@@ -1,0 +1,31 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:padding="24dp"
+    android:background="@drawable/fondo_cesped">
+
+    <TextView
+        android:id="@+id/texto_resultado"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Has cometido X fallos"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        android:textColor="@android:color/black"
+        android:layout_marginBottom="32dp"/>
+
+    <Button
+        android:id="@+id/boton_reintentar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Reintentar"/>
+
+    <Button
+        android:id="@+id/boton_menu"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Menú principal"
+        android:layout_marginTop="16dp"/>
+</LinearLayout>

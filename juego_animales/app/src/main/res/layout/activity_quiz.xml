@@ -22,7 +22,7 @@
         android:id="@+id/texto_pregunta"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Pregunta 1"
+        android:text="Adivina el animal correcto"
         android:textSize="28sp"
         android:textColor="#3A3A9F"
         android:textStyle="bold"
@@ -73,7 +73,7 @@
 
         <!-- Botón 1 (perro) -->
         <ImageButton
-            android:id="@+id/boton_perro"
+            android:id="@+id/boton1"
             android:layout_width="300dp"
             android:layout_height="300dp"
             android:src="@drawable/animal_perro"
@@ -84,13 +84,13 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toStartOf="@id/boton_gato"
+            app:layout_constraintEnd_toStartOf="@id/boton2"
             android:layout_marginEnd="20dp"
             app:layout_constraintHorizontal_chainStyle="packed"/>
 
         <!-- Botón 2 (gato) -->
         <ImageButton
-            android:id="@+id/boton_gato"
+            android:id="@+id/boton2"
             android:layout_width="300dp"
             android:layout_height="300dp"
             android:src="@drawable/animal_gato"
@@ -100,13 +100,13 @@
             app:backgroundTint="@null"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toEndOf="@id/boton_perro"
-            app:layout_constraintEnd_toStartOf="@id/boton_pato"
+            app:layout_constraintStart_toEndOf="@id/boton1"
+            app:layout_constraintEnd_toStartOf="@id/boton3"
             android:layout_marginEnd="20dp"/>
 
         <!-- Botón 3 (conejo) -->
         <ImageButton
-            android:id="@+id/boton_pato"
+            android:id="@+id/boton3"
             android:layout_width="300dp"
             android:layout_height="300dp"
             android:src="@drawable/animal_pato"
@@ -116,13 +116,13 @@
             app:backgroundTint="@null"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toEndOf="@id/boton_gato"
-            app:layout_constraintEnd_toStartOf="@id/boton_rana"
+            app:layout_constraintStart_toEndOf="@id/boton2"
+            app:layout_constraintEnd_toStartOf="@id/boton4"
             android:layout_marginEnd="20dp"/>
 
         <!-- Botón 4 (rana) -->
         <ImageButton
-            android:id="@+id/boton_rana"
+            android:id="@+id/boton4"
             android:layout_width="300dp"
             android:layout_height="300dp"
             android:src="@drawable/animal_rana"
@@ -132,7 +132,7 @@
             app:backgroundTint="@null"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toEndOf="@id/boton_pato"
+            app:layout_constraintStart_toEndOf="@id/boton3"
             app:layout_constraintEnd_toEndOf="parent"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>

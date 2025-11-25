@@ -15,10 +15,10 @@
       </SelectionState>
       <SelectionState runConfigName="MainActivity">
         <option name="selectionMode" value="DROPDOWN" />
-        <DropdownSelection timestamp="2025-11-10T15:51:37.425657900Z">
+        <DropdownSelection timestamp="2025-11-24T18:28:10.007769300Z">
           <Target type="DEFAULT_BOOT">
             <handle>
-              <DeviceId pluginId="LocalEmulator" identifier="path=C:\Users\CEP-TARDA\.android\avd\tablet.avd" />
+              <DeviceId pluginId="LocalEmulator" identifier="path=C:\Users\CEP-TARDA\.android\avd\tablet_2.avd" />
             </handle>
           </Target>
         </DropdownSelection>

@@ -46,7 +46,7 @@
     <!-- Botón siguiente nivel -->
     <Button
         android:id="@+id/btnSiguiente"
-        android:text="Siguiente nivel"
+        android:text="Volver a intentarlo"
         android:layout_width="300dp"
         android:layout_height="70dp"
         android:textSize="20sp"
