@@ -12,9 +12,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.SonidoAnimal">
 
-        <!-- Activity principal que se abre al iniciar -->
+        <!-- 1.PANTALLA DE INICIO-->
         <activity
-            android:name=".MenuActivity"
+            android:name=".MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -22,15 +22,23 @@
             </intent-filter>
         </activity>
 
-        <!-- JuegoAnimalesActivity solo para navegar desde el menú -->
+        <!-- 2.LOGIN -->
+        <activity android:name=".LoginActivity" android:exported="true"/>
+
+        <!-- 3.SELECCIÓN DE AVATAR-->
+        <activity android:name=".AvatarActivity" android:exported="true"/>
+
+        <!-- 4.MENÚ DE NIVELES-->
+        <activity android:name=".MenuActivity" android:exported="true"/>
+
+        <!-- 5.JUEGO-->
         <activity
             android:name=".JuegoAnimalesActivity"
             android:exported="true" />
 
-        <!-- LoginActivity -->
-        <activity android:name=".LoginActivity" />
 
-        <!-- Pantallas de resultados -->
+
+        <!-- 6.RESULTADOS-->
         <activity
             android:name=".ResultadoCorrectoActivity"
             android:exported="true" />

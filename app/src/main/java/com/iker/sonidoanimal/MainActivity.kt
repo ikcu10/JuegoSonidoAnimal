@@ -10,7 +10,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main) // Esto carga tu XML
 
-        // Botón para abrir la segunda pantalla
+
         val botonComenzar = findViewById<Button>(R.id.boton_comenzar)
         botonComenzar.setOnClickListener {
             val intent = Intent(this, LoginActivity::class.java)

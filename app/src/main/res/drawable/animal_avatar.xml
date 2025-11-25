@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+
+    <!-- Color de fondo (Blanco semitransparente para que se vea limpio) -->
+    <solid android:color="#FFFFFF" />
+
+    <!-- Bordes redondeados -->
+    <corners android:radius="20dp" />
+
+    <!-- Borde de color marrón (el mismo marrón #5B3A0A que usas en tu texto) -->
+    <stroke
+        android:width="4dp"
+        android:color="#5B3A0A" />
+
+</shape>
