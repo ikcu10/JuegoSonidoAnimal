@@ -10,24 +10,26 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.ProgressBar
 import android.widget.TextView
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
-import androidx.recyclerview.widget.GridLayoutManager
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 
 class JuegoAnimalesActivity : AppCompatActivity() {
 
-    //private lateinit var recyclerView: RecyclerView
+
     private lateinit var contenedorAnimales: LinearLayout
     private lateinit var tvQuestion: TextView
     private lateinit var progressBar: ProgressBar
     private lateinit var btnSound: ImageView
-    //private lateinit var adapter: AnimalAdapter
+    private lateinit var tvScore: TextView
 
     private var currentLevel = 1
     private var isInteractionEnabled = true
+
+    // Variables nuevas para estadísticas
+    private var startTime: Long = 0
+    private var puntuacionActual = 100
+    private var erroresNivel = 0
+    private var nombreNino: String = "Jugador" // Valor por defecto
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -45,8 +47,10 @@ class JuegoAnimalesActivity : AppCompatActivity() {
         progressBar = findViewById(R.id.barra_progreso)
         btnSound = findViewById(R.id.boton_sonido)
 
-        // recyclerView.layoutManager =
-        //    LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
+        tvScore = findViewById(R.id.texto_puntuacion)
+
+        val prefs = getSharedPreferences("MisPreferencias", MODE_PRIVATE)
+        nombreNino = prefs.getString("nombreNino", "Jugador") ?: "Jugador"
 
         btnSound.setOnClickListener {
             val sonidoNivel = getSoundForLevel(currentLevel)
@@ -56,6 +60,13 @@ class JuegoAnimalesActivity : AppCompatActivity() {
 
     private fun setupLevel(level: Int) {
         SoundManager.stop()
+
+        // Iniciar cronómetro y resetear puntos
+        startTime = System.currentTimeMillis()
+        puntuacionActual = 100
+        erroresNivel = 0
+        updateScoreDisplay()
+
         val animals = getAnimalsForLevel(level)
 
         isInteractionEnabled = true
@@ -180,6 +191,8 @@ class JuegoAnimalesActivity : AppCompatActivity() {
             playAnimalSound(selectedAnimal.soundRes)
             playVoiceCorrect()
 
+            guardarDatosDePartida()
+
             Handler(Looper.getMainLooper()).postDelayed({
                 val intent =
                     Intent(this@JuegoAnimalesActivity, ResultadoCorrectoActivity::class.java)
@@ -190,6 +203,16 @@ class JuegoAnimalesActivity : AppCompatActivity() {
 
         } else {
             // ERROR
+            erroresNivel++
+
+            // Lógica de penalización: 1 fallo -> 50, más -> 0
+            if (erroresNivel == 1) {
+                puntuacionActual = 50
+            } else {
+                puntuacionActual = 0
+            }
+            updateScoreDisplay()
+
             cardView.setCardBackgroundColor(ContextCompat.getColor(context, R.color.wrong_color))
             cardView.isEnabled = false
             playAnimalSound(selectedAnimal.soundRes)
@@ -197,6 +220,8 @@ class JuegoAnimalesActivity : AppCompatActivity() {
 
             val listaFallos = intent.getIntegerArrayListExtra("listaFallos") ?: arrayListOf()
             listaFallos.add(selectedAnimal.id)
+
+            guardarDatosDePartida()
 
             Handler(Looper.getMainLooper()).postDelayed({
                 val intent = Intent(this@JuegoAnimalesActivity, ResultadoIncorrectoActivity::class.java)
@@ -208,12 +233,34 @@ class JuegoAnimalesActivity : AppCompatActivity() {
         }
     }
 
+    // Función que conecta con gestordatos
+    private fun guardarDatosDePartida() {
+        // 1. Calculamos cuánto tardó (Ahora - Inicio) en segundos
+        val tiempoFinal = (System.currentTimeMillis() - startTime) / 1000
+        val fechaActual = GestorDatos.obtenerFechaActual()
+
+        // 2. Empaquetamos todo en el molde Partida
+        val partida = Partida(
+            nombreNino = nombreNino,
+            nivel = currentLevel,
+            tiempoSegundos = tiempoFinal,
+            errores = erroresNivel,
+            puntuacion = puntuacionActual,
+            fechaHora = fechaActual
+                             )
+
+        // 3. Mandamos al obrero a escribir el archivo
+        GestorDatos.guardarPartida(this, partida)
+    }
+
+    private fun updateScoreDisplay() {
+        tvScore.text = "Puntos: $puntuacionActual"
+    }
+
     private fun updateProgress(level: Int) {
         progressBar.progress = (level * 10)
         tvQuestion.text = "Nivel $level"
     }
-
-
 
     private fun playAnimalSound(soundRes: Int) {
         SoundManager.play(this, soundRes)

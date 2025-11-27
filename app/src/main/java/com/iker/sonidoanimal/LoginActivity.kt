@@ -69,21 +69,27 @@ class LoginActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
 
-            // Guardar en memoria
-            val prefs = getSharedPreferences("MisPreferencias", MODE_PRIVATE)
-            val editor = prefs.edit()
-            editor.putString("avatarGuardado", avatarSeleccionado)
-            editor.apply()
             // Validación: ¿Ha elegido avatar?
             if (avatarSeleccionado == null) {
                 Toast.makeText(this, "¡Pulsa el + para elegir tu avatar!", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 
+            // --- GUARDADO EN MEMORIA ---
+            val prefs = getSharedPreferences("MisPreferencias", MODE_PRIVATE)
+            val editor = prefs.edit()
+
+            // 1. Guardamos el avatar
+            editor.putString("avatarGuardado", avatarSeleccionado)
+
+            // 2. Guardamos el nombre del niño (NUEVO)
+            // Esto es crucial para que luego aparezca en el JSON
+            editor.putString("nombreNino", nombreUsuario)
+
+            editor.apply() // Confirmamos el guardado
+
             // SI TODO ESTÁ BIEN -> IR AL MENÚ
             val intent = Intent(this, MenuActivity::class.java)
-            // Pasamos el avatar elegido al menú para que se vea en la esquina
-            
             startActivity(intent)
         }
     }
