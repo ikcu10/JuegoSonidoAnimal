@@ -94,6 +94,7 @@ class JuegoAnimalesActivity : AppCompatActivity() {
 
             cardView.setOnClickListener {
                 if (isInteractionEnabled) {
+                    isInteractionEnabled = false
                     handleAnimalSelection(animal, animals, cardView)
                 }
             }

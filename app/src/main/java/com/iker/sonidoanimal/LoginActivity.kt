@@ -69,6 +69,11 @@ class LoginActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
 
+            // Guardar en memoria
+            val prefs = getSharedPreferences("MisPreferencias", MODE_PRIVATE)
+            val editor = prefs.edit()
+            editor.putString("avatarGuardado", avatarSeleccionado)
+            editor.apply()
             // Validación: ¿Ha elegido avatar?
             if (avatarSeleccionado == null) {
                 Toast.makeText(this, "¡Pulsa el + para elegir tu avatar!", Toast.LENGTH_SHORT).show()
@@ -78,7 +83,7 @@ class LoginActivity : AppCompatActivity() {
             // SI TODO ESTÁ BIEN -> IR AL MENÚ
             val intent = Intent(this, MenuActivity::class.java)
             // Pasamos el avatar elegido al menú para que se vea en la esquina
-            intent.putExtra("avatar", avatarSeleccionado)
+            
             startActivity(intent)
         }
     }

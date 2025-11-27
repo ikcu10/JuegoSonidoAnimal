@@ -17,7 +17,8 @@ class MenuActivity : AppCompatActivity() {
         val imgAvatar = findViewById<ImageView>(R.id.imgAvatar)
 
         // 2. Recogemos el texto que nos mandó la otra pantalla (ej: "oso", "zorro")
-        val avatarElegido = intent.getStringExtra("avatar")
+        val prefs = getSharedPreferences("MisPreferencias", MODE_PRIVATE)
+        val avatarElegido = prefs.getString("avatarGuardado", null)
 
         // 3. Dependiendo del texto, ponemos una imagen u otra
         when (avatarElegido) {
