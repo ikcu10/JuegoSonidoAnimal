@@ -36,11 +36,11 @@ class LoginActivity : AppCompatActivity() {
                     // Ponemos la imagen del animal en el botón
                     when (animal) {
                         "oso" -> botonMas.setBackgroundResource(R.drawable.avatar_oso)
-                        "rata" -> botonMas.setBackgroundResource(R.drawable.avatar_oso_panda)
+                        "oso_panda" -> botonMas.setBackgroundResource(R.drawable.avatar_oso_panda)
                         "pinguino" -> botonMas.setBackgroundResource(R.drawable.avatar_pinguino)
-                        "zorro" -> botonMas.setBackgroundResource(R.drawable.avatar_pinguino)
-                        "conejo" -> botonMas.setBackgroundResource(R.drawable.avatar_tigre)
-                        "jirafa" -> botonMas.setBackgroundResource(R.drawable.avatar_leon)
+                        "zorro" -> botonMas.setBackgroundResource(R.drawable.avatar_zorro)
+                        "tigre" -> botonMas.setBackgroundResource(R.drawable.avatar_tigre)
+                        "leon" -> botonMas.setBackgroundResource(R.drawable.avatar_leon)
                     }
                 }
             }
@@ -87,9 +87,7 @@ class LoginActivity : AppCompatActivity() {
             editor.putInt("nivelDesbloqueado", 1)
             editor.putInt("puntosTotales", 0)
 
-
-
-
+            editor.putInt("numeroPartida", 1)
             editor.apply() // Confirmamos el guardado
 
             // SI TODO ESTÁ BIEN -> IR AL MENÚ

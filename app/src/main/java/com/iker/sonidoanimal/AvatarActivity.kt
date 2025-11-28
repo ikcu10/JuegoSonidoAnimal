@@ -33,11 +33,11 @@ class AvatarActivity : AppCompatActivity() {
         }
 
         avatarOso.setOnClickListener { devolverAvatar("oso") }
-        avatarRata.setOnClickListener { devolverAvatar("rata") }
+        avatarRata.setOnClickListener { devolverAvatar("oso_panda") }
         avatarPingu.setOnClickListener { devolverAvatar("pinguino") }
         avatarZorro.setOnClickListener { devolverAvatar("zorro") }
-        avatarConejo.setOnClickListener { devolverAvatar("conejo") }
-        avatarJirafa.setOnClickListener { devolverAvatar("jirafa") }
+        avatarConejo.setOnClickListener { devolverAvatar("tigre") }
+        avatarJirafa.setOnClickListener { devolverAvatar("leon") }
 
         val rootView = findViewById<android.view.View>(R.id.activity_main)
         ViewCompat.setOnApplyWindowInsetsListener(rootView) { v, insets ->

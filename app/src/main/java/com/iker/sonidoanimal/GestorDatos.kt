@@ -16,6 +16,7 @@ object GestorDatos {
             val json = JSONObject()
             json.put("nombre", partida.nombreNino)
             json.put("nivel", partida.nivel)
+            json.put("partida_numero", partida.numeroPartida)
             json.put("tiempo_segundos", partida.tiempoSegundos)
             json.put("errores", partida.errores)
             json.put("puntuacion", partida.puntuacion)

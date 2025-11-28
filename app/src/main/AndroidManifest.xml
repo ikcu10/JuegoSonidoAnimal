@@ -47,5 +47,8 @@
             android:name=".ResultadoIncorrectoActivity"
             android:exported="true" />
 
+        <!-- 7.PUNTOS-->
+        <activity android:name=".ActivityPuntos" android:exported="true" />
+
     </application>
 </manifest>

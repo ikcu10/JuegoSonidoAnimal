@@ -29,6 +29,7 @@ class JuegoAnimalesActivity : AppCompatActivity() {
     private var startTime: Long = 0
     private var nombreNino: String = "Jugador" // Valor por defecto
 
+    private var numeroPartida = 1
     private var puntuacionAcumuladaPrevia = 0
     private var puntosEsteNivel = 100
 
@@ -55,6 +56,7 @@ class JuegoAnimalesActivity : AppCompatActivity() {
         val prefs = getSharedPreferences("MisPreferencias", MODE_PRIVATE)
         nombreNino = prefs.getString("nombreNino", "Jugador") ?: "Jugador"
 
+        numeroPartida = prefs.getInt("numeroPartida", 1)
         // Si es el Nivel 1, reseteamos la cuenta a 0.
         // Si es otro nivel, leemos cuántos puntos llevamos acumulados.
         if (currentLevel == 1) {
@@ -227,11 +229,21 @@ class JuegoAnimalesActivity : AppCompatActivity() {
             guardarDatosDePartida(puntuacionFinal)
 
             Handler(Looper.getMainLooper()).postDelayed({
-                val intent = Intent(this@JuegoAnimalesActivity, ResultadoCorrectoActivity::class.java)
-                intent.putExtra("nivel", currentLevel)
-                startActivity(intent)
-                finish()
-            }, 2000)
+                                                            // --- CRUCE DE CAMINOS (FIN DEL JUEGO) ---
+                                                            if (currentLevel == 10) {
+                                                                // Si es el nivel 10, vamos a la pantalla final
+                                                                val intent = Intent(this@JuegoAnimalesActivity, ActivityPuntos::class.java)
+                                                                startActivity(intent)
+                                                                finish()
+                                                            } else {
+                                                                // Si no, seguimos jugando normal
+                                                                val intent = Intent(this@JuegoAnimalesActivity, ResultadoCorrectoActivity::class.java)
+                                                                intent.putExtra("nivel", currentLevel)
+                                                                startActivity(intent)
+                                                                finish()
+                                                            }
+                                                            // ----------------------------------------
+                                                        }, 2000)
 
         } else {
             // --- ERROR (FALLO) ---
@@ -284,6 +296,7 @@ class JuegoAnimalesActivity : AppCompatActivity() {
         val partida = Partida(
             nombreNino = nombreNino,
             nivel = currentLevel,
+            numeroPartida = numeroPartida,
             tiempoSegundos = tiempoFinal,
             errores = erroresNivel,
             puntuacion = puntuacionAGuardar,

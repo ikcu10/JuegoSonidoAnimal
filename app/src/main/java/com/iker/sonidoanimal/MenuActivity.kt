@@ -30,12 +30,12 @@ class MenuActivity : AppCompatActivity() {
         // Cargar Avatar (Tu código de siempre)
         val avatarElegido = prefs.getString("avatarGuardado", null)
         when (avatarElegido) {
-            "oso" -> imgAvatar.setImageResource(R.drawable.animal_oso)
-            "rata" -> imgAvatar.setImageResource(R.drawable.animal_raton)
-            "pinguino" -> imgAvatar.setImageResource(R.drawable.animal_pinguino)
-            "zorro" -> imgAvatar.setImageResource(R.drawable.animal_zorro)
-            "conejo" -> imgAvatar.setImageResource(R.drawable.animal_conejo)
-            "jirafa" -> imgAvatar.setImageResource(R.drawable.animal_girafa)
+            "oso" -> imgAvatar.setImageResource(R.drawable.avatar_oso)
+            "panda" -> imgAvatar.setImageResource(R.drawable.avatar_oso_panda)
+            "pinguino" -> imgAvatar.setImageResource(R.drawable.avatar_pinguino)
+            "zorro" -> imgAvatar.setImageResource(R.drawable.avatar_zorro)
+            "tigre" -> imgAvatar.setImageResource(R.drawable.avatar_tigre)
+            "leon" -> imgAvatar.setImageResource(R.drawable.avatar_leon)
             else -> imgAvatar.setImageResource(R.drawable.ic_launcher_foreground)
         }
 
