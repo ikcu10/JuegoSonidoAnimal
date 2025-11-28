@@ -14,18 +14,20 @@ class ResultadoIncorrectoActivity : AppCompatActivity() {
 
         val nivelActual = intent.getIntExtra("nivel", 1)
 
+        val erroresPrevios = intent.getIntExtra("erroresPrevios", 0)
+
         val btnReintentar = findViewById<Button>(R.id.btnReintar)
         val btnMenu = findViewById<Button>(R.id.btnMenu)
 
         btnReintentar.setOnClickListener {
-            val nivelActual = intent.getIntExtra("nivel", 1)
             val listaFallos = intent.getIntegerArrayListExtra("listaFallos") ?: arrayListOf()
 
             val intent = Intent(this, JuegoAnimalesActivity::class.java)
             intent.putExtra("nivel", nivelActual)
             intent.putExtra("reintentar", true)
-
             intent.putIntegerArrayListExtra("listaFallos", listaFallos)
+
+            intent.putExtra("erroresPrevios", erroresPrevios)
 
             startActivity(intent)
             finish()

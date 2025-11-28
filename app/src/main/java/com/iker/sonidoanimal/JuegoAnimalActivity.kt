@@ -27,9 +27,12 @@ class JuegoAnimalesActivity : AppCompatActivity() {
 
     // Variables nuevas para estadísticas
     private var startTime: Long = 0
-    private var puntuacionActual = 100
-    private var erroresNivel = 0
     private var nombreNino: String = "Jugador" // Valor por defecto
+
+    private var puntuacionAcumuladaPrevia = 0
+    private var puntosEsteNivel = 100
+
+    private var erroresNivel = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -52,6 +55,15 @@ class JuegoAnimalesActivity : AppCompatActivity() {
         val prefs = getSharedPreferences("MisPreferencias", MODE_PRIVATE)
         nombreNino = prefs.getString("nombreNino", "Jugador") ?: "Jugador"
 
+        // Si es el Nivel 1, reseteamos la cuenta a 0.
+        // Si es otro nivel, leemos cuántos puntos llevamos acumulados.
+        if (currentLevel == 1) {
+            puntuacionAcumuladaPrevia = 0
+            prefs.edit().putInt("puntosTotales", 0).apply()
+        } else {
+            puntuacionAcumuladaPrevia = prefs.getInt("puntosTotales", 0)
+        }
+
         btnSound.setOnClickListener {
             val sonidoNivel = getSoundForLevel(currentLevel)
             playAnimalSound(sonidoNivel)
@@ -60,17 +72,29 @@ class JuegoAnimalesActivity : AppCompatActivity() {
 
     private fun setupLevel(level: Int) {
         SoundManager.stop()
-
-        // Iniciar cronómetro y resetear puntos
         startTime = System.currentTimeMillis()
-        puntuacionActual = 100
-        erroresNivel = 0
-        updateScoreDisplay()
 
-        val animals = getAnimalsForLevel(level)
+        // --- RECUPERAR ERRORES (SI VIENE DE REINTENTAR) ---
+        erroresNivel = intent.getIntExtra("erroresPrevios", 0)
+
+        // Calculamos cuánto vale el premio ahora mismo
+        if (erroresNivel == 0) {
+            puntosEsteNivel = 100
+        } else if (erroresNivel == 1) {
+            puntosEsteNivel = 50
+        } else if (erroresNivel == 2) {
+            puntosEsteNivel = 25
+        } else {
+            puntosEsteNivel = 0
+        }
+
+        // --- VISUALIZACIÓN ---
+        // Mostramos SOLO lo que tiene seguro. No sumamos el premio todavía.
+        tvScore.text = "Puntos: $puntuacionAcumuladaPrevia"
 
         isInteractionEnabled = true
-        // Limpiar el contenedor
+
+        val animals = getAnimalsForLevel(level)
         contenedorAnimales.removeAllViews()
 
         val anchoPantalla = resources.displayMetrics.widthPixels
@@ -97,7 +121,6 @@ class JuegoAnimalesActivity : AppCompatActivity() {
             params.marginEnd = 16
             cardView.layoutParams = params
 
-            // Si es reintento y el animal es el incorrecto, poner gris
             if (esReintento && listaFallos.contains(animal.id)) {
                 cardView.setCardBackgroundColor(ContextCompat.getColor(this, R.color.disabled_color))
                 cardView.isEnabled = false
@@ -124,58 +147,58 @@ class JuegoAnimalesActivity : AppCompatActivity() {
                        )
 
             2 -> listOf(
-                Animal(1, R.drawable.animal_vaca, "León", R.raw.sonido_vaca, true),
-                Animal(2, R.drawable.animal_conejo, "Elefante", R.raw.sonido_conejo)
+                Animal(1, R.drawable.animal_vaca, "Vaca", R.raw.sonido_vaca, true),
+                Animal(2, R.drawable.animal_conejo, "Conejo", R.raw.sonido_conejo)
                        )
 
             3 -> listOf(
-                Animal(1, R.drawable.animal_rana, "Pájaro", R.raw.sonido_rana,true),
-                Animal(2, R.drawable.animal_raton, "Oveja", R.raw.sonido_raton),
-                Animal(3, R.drawable.animal_loro, "Cerdo", R.raw.sonido_loro)
+                Animal(1, R.drawable.animal_rana, "Rana", R.raw.sonido_rana,true),
+                Animal(2, R.drawable.animal_raton, "Raton", R.raw.sonido_raton),
+                Animal(3, R.drawable.animal_loro, "Loro", R.raw.sonido_loro)
                        )
 
             4 -> listOf(
-                Animal(1, R.drawable.animal_cerdo, "Vaca", R.raw.sonido_cerdo, true),
-                Animal(2, R.drawable.animal_koala, "Caballo", R.raw.sonido_koala),
-                Animal(3, R.drawable.animal_ardilla, "Gallina", R.raw.sonido_ardilla)
+                Animal(1, R.drawable.animal_cerdo, "Cerdo", R.raw.sonido_cerdo, true),
+                Animal(2, R.drawable.animal_koala, "Koala", R.raw.sonido_koala),
+                Animal(3, R.drawable.animal_ardilla, "Ardilla", R.raw.sonido_ardilla)
                        )
 
             5 -> listOf(
-                Animal(1, R.drawable.animal_pato, "Pez", R.raw.sonido_pato, true),
-                Animal(2, R.drawable.animal_oveja, "Tigre", R.raw.sonido_oveja),
-                Animal(3, R.drawable.animal_aguila, "Oso", R.raw.sonido_aguila),
-                Animal(4, R.drawable.animal_tortuga, "Mono", R.raw.sonido_tortuga)
+                Animal(1, R.drawable.animal_pato, "Pata", R.raw.sonido_pato, true),
+                Animal(2, R.drawable.animal_oveja, "Oveja", R.raw.sonido_oveja),
+                Animal(3, R.drawable.animal_aguila, "Aguila", R.raw.sonido_aguila),
+                Animal(4, R.drawable.animal_tortuga, "Tortuga", R.raw.sonido_tortuga)
                        )
 
             6 -> listOf(
-                Animal(1, R.drawable.animal_elefante, "Serpiente", R.raw.soido_elefante, true),
-                Animal(2, R.drawable.animal_cabra, "Ardilla", R.raw.sonido_cabra),
-                Animal(3, R.drawable.animal_vaca, "Zorro", R.raw.sonido_vaca),
-                Animal(4, R.drawable.animal_hamster, "Lobo", R.raw.sonido_hamster)
+                Animal(1, R.drawable.animal_elefante, "Elefante", R.raw.soido_elefante, true),
+                Animal(2, R.drawable.animal_cabra, "Cabra", R.raw.sonido_cabra),
+                Animal(3, R.drawable.animal_vaca, "Vaca", R.raw.sonido_vaca),
+                Animal(4, R.drawable.animal_hamster, "Hamster", R.raw.sonido_hamster)
                        )
 
             7 -> listOf(
-                Animal(1, R.drawable.animal_zorro, "Jirafa", R.raw.sonido_zorro, true),
-                Animal(2, R.drawable.animal_girafa, "Cebra", R.raw.sonido_jirafa),
-                Animal(3, R.drawable.animal_pinguino, "Hipopótamo", R.raw.sonido_pinguino),
-                Animal(4, R.drawable.animal_rinoceronte, "Cocodrilo", R.raw.sonido_rinoceronte)
+                Animal(1, R.drawable.animal_zorro, "Zorro", R.raw.sonido_zorro, true),
+                Animal(2, R.drawable.animal_jirafa, "Girafa", R.raw.sonido_jirafa),
+                Animal(3, R.drawable.animal_pinguino, "Pinguino", R.raw.sonido_pinguino),
+                Animal(4, R.drawable.animal_rinoceronte, "Rinoceronte", R.raw.sonido_rinoceronte)
                        )
 
             8 -> listOf(
-                Animal(1, R.drawable.animal_cocodrilo, "Pingüino", R.raw.sonido_cocodrilo, true),
-                Animal(2, R.drawable.animal_oso_panda, "Foca", R.raw.sonido_oso_panda),
-                Animal(3, R.drawable.animal_koala, "Ballena", R.raw.sonido_koala),
-                Animal(4, R.drawable.animal_oso, "Delfín", R.raw.sonido_oso)
+                Animal(1, R.drawable.animal_cocodrilo, "Cocodrilo", R.raw.sonido_cocodrilo, true),
+                Animal(2, R.drawable.animal_oso_panda, "Panda", R.raw.sonido_oso_panda),
+                Animal(3, R.drawable.animal_koala, "Koala", R.raw.sonido_koala),
+                Animal(4, R.drawable.animal_oso, "Oso", R.raw.sonido_oso)
                        )
 
             9 -> listOf(
-                Animal(1, R.drawable.animal_perro, "Águila", R.raw.sonido_perro),
-                Animal(2, R.drawable.animal_lobo, "Búho", R.raw.sonido_lobo, true)
+                Animal(1, R.drawable.animal_perro, "Perro", R.raw.sonido_perro),
+                Animal(2, R.drawable.animal_lobo, "Lobo", R.raw.sonido_lobo, true)
                        )
 
             10 -> listOf(
-                Animal(1, R.drawable.animal_leon, "Mariposa", R.raw.sonido_leon, true),
-                Animal(2, R.drawable.animal_tigre, "Abeja", R.raw.sonido_tigre)
+                Animal(1, R.drawable.animal_leon, "Leon", R.raw.sonido_leon, true),
+                Animal(2, R.drawable.animal_tigre, "Tigre", R.raw.sonido_tigre)
                         )
 
             else -> emptyList()
@@ -185,33 +208,46 @@ class JuegoAnimalesActivity : AppCompatActivity() {
     private fun handleAnimalSelection(selectedAnimal: Animal, allAnimals: List<Animal>, cardView: CardView) {
         val context = this
         if (selectedAnimal.isCorrect) {
-            // ACIERTO
+            // --- ACIERTO ---
             cardView.setCardBackgroundColor(ContextCompat.getColor(context, R.color.correct_color))
             cardView.isEnabled = false
             playAnimalSound(selectedAnimal.soundRes)
             playVoiceCorrect()
 
-            guardarDatosDePartida()
+            val puntuacionFinal = puntuacionAcumuladaPrevia + puntosEsteNivel
+
+            tvScore.text = "Puntos: $puntuacionFinal"
+            // Como ha ganado, guardamos el total en memoria para el siguiente nivel
+            val prefs = getSharedPreferences("MisPreferencias", MODE_PRIVATE)
+            val editor = prefs.edit()
+            editor.putInt("puntosTotales", puntuacionFinal)
+            editor.apply()
+            // ---------------------------------------
+
+            guardarDatosDePartida(puntuacionFinal)
 
             Handler(Looper.getMainLooper()).postDelayed({
-                val intent =
-                    Intent(this@JuegoAnimalesActivity, ResultadoCorrectoActivity::class.java)
+                val intent = Intent(this@JuegoAnimalesActivity, ResultadoCorrectoActivity::class.java)
                 intent.putExtra("nivel", currentLevel)
                 startActivity(intent)
                 finish()
             }, 2000)
 
         } else {
-            // ERROR
+            // --- ERROR (FALLO) ---
             erroresNivel++
 
-            // Lógica de penalización: 1 fallo -> 50, más -> 0
+            // REGLA: 100 -> 50 -> 25 -> 0
             if (erroresNivel == 1) {
-                puntuacionActual = 50
+                puntosEsteNivel = 50
+            } else if (erroresNivel == 2) {
+                puntosEsteNivel = 25
             } else {
-                puntuacionActual = 0
+                puntosEsteNivel = 0
             }
-            updateScoreDisplay()
+
+            // NOTA: NO cambiamos tvScore. Sigue viendo sus puntos seguros.
+            // Simplemente sabe que cuando gane, ganará menos.
 
             cardView.setCardBackgroundColor(ContextCompat.getColor(context, R.color.wrong_color))
             cardView.isEnabled = false
@@ -221,12 +257,17 @@ class JuegoAnimalesActivity : AppCompatActivity() {
             val listaFallos = intent.getIntegerArrayListExtra("listaFallos") ?: arrayListOf()
             listaFallos.add(selectedAnimal.id)
 
-            guardarDatosDePartida()
+            // Guardamos JSON (con lo que tiene seguro hasta ahora)
+            guardarDatosDePartida(puntuacionAcumuladaPrevia)
 
             Handler(Looper.getMainLooper()).postDelayed({
                 val intent = Intent(this@JuegoAnimalesActivity, ResultadoIncorrectoActivity::class.java)
                 intent.putExtra("nivel", currentLevel)
-                                                            intent.putIntegerArrayListExtra("listaFallos", listaFallos)
+                intent.putIntegerArrayListExtra("listaFallos", listaFallos)
+
+                // PASAMOS EL CONTADOR DE ERRORES AL REINTENTO
+                intent.putExtra("erroresPrevios", erroresNivel)
+
                 startActivity(intent)
                 finish()
             }, 2000)
@@ -234,7 +275,7 @@ class JuegoAnimalesActivity : AppCompatActivity() {
     }
 
     // Función que conecta con gestordatos
-    private fun guardarDatosDePartida() {
+    private fun guardarDatosDePartida(puntuacionAGuardar: Int) {
         // 1. Calculamos cuánto tardó (Ahora - Inicio) en segundos
         val tiempoFinal = (System.currentTimeMillis() - startTime) / 1000
         val fechaActual = GestorDatos.obtenerFechaActual()
@@ -245,16 +286,16 @@ class JuegoAnimalesActivity : AppCompatActivity() {
             nivel = currentLevel,
             tiempoSegundos = tiempoFinal,
             errores = erroresNivel,
-            puntuacion = puntuacionActual,
+            puntuacion = puntuacionAGuardar,
             fechaHora = fechaActual
-                             )
+        )
 
         // 3. Mandamos al obrero a escribir el archivo
         GestorDatos.guardarPartida(this, partida)
     }
 
     private fun updateScoreDisplay() {
-        tvScore.text = "Puntos: $puntuacionActual"
+        tvScore.text = "Puntos: $puntuacionAcumuladaPrevia"
     }
 
     private fun updateProgress(level: Int) {

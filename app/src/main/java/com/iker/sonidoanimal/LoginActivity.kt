@@ -35,12 +35,12 @@ class LoginActivity : AppCompatActivity() {
 
                     // Ponemos la imagen del animal en el botón
                     when (animal) {
-                        "oso" -> botonMas.setBackgroundResource(R.drawable.animal_oso)
-                        "rata" -> botonMas.setBackgroundResource(R.drawable.animal_raton)
-                        "pinguino" -> botonMas.setBackgroundResource(R.drawable.animal_pinguino)
-                        "zorro" -> botonMas.setBackgroundResource(R.drawable.animal_zorro)
-                        "conejo" -> botonMas.setBackgroundResource(R.drawable.animal_conejo)
-                        "jirafa" -> botonMas.setBackgroundResource(R.drawable.animal_girafa)
+                        "oso" -> botonMas.setBackgroundResource(R.drawable.avatar_oso)
+                        "rata" -> botonMas.setBackgroundResource(R.drawable.avatar_oso_panda)
+                        "pinguino" -> botonMas.setBackgroundResource(R.drawable.avatar_pinguino)
+                        "zorro" -> botonMas.setBackgroundResource(R.drawable.avatar_pinguino)
+                        "conejo" -> botonMas.setBackgroundResource(R.drawable.avatar_tigre)
+                        "jirafa" -> botonMas.setBackgroundResource(R.drawable.avatar_leon)
                     }
                 }
             }
@@ -81,10 +81,14 @@ class LoginActivity : AppCompatActivity() {
 
             // 1. Guardamos el avatar
             editor.putString("avatarGuardado", avatarSeleccionado)
-
             // 2. Guardamos el nombre del niño (NUEVO)
-            // Esto es crucial para que luego aparezca en el JSON
             editor.putString("nombreNino", nombreUsuario)
+
+            editor.putInt("nivelDesbloqueado", 1)
+            editor.putInt("puntosTotales", 0)
+
+
+
 
             editor.apply() // Confirmamos el guardado
 

@@ -16,6 +16,19 @@ class ResultadoCorrectoActivity : AppCompatActivity() {
         val nivelActual = intent.getIntExtra("nivel", 1)
         val nivelMaximo = 10
 
+        // 1. Abrimos la memoria
+        val prefs = getSharedPreferences("MisPreferencias", MODE_PRIVATE)
+        val maxNivelDesbloqueado = prefs.getInt("nivelDesbloqueado", 1)
+
+        // 2. Si acabamos de superar nuestro propio record
+        // Entonces desbloqueamos el siguiente nivel
+        if (nivelActual == maxNivelDesbloqueado)
+        {
+            val editor = prefs.edit()
+            editor.putInt("nivelDesbloqueado", maxNivelDesbloqueado + 1)
+            editor.apply()
+        }
+
         val btnSiguiente = findViewById<Button>(R.id.btnSiguiente)
         val btnMenu = findViewById<Button>(R.id.btnMenu)
 
