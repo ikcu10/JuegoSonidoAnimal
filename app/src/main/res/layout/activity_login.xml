@@ -45,16 +45,18 @@
             android:textSize="50dp"/>
 
         <!-- Botón redondo con "+" -->
-        <Button
+        <ImageButton
             android:id="@+id/boton_mas"
             android:layout_width="180dp"
             android:layout_height="180dp"
-            tools:text="+"
-            android:textSize="100dp"
-            android:background="@drawable/boton_redondo"
-            android:textColor="#FFFFFF"
             android:layout_marginBottom="40dp"
-            app:backgroundTint="@null"/>
+
+            android:background="@drawable/boton_redondo"
+            android:src="@drawable/signo_mas"
+
+            android:scaleType="fitCenter"
+            android:padding="40dp"
+            />
 
         <!-- Botón ¡Jugar! -->
         <Button

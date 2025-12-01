@@ -1,12 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <shape xmlns:android="http://schemas.android.com/apk/res/android"
-    android:shape="rectangle">
+    android:shape="oval">
 
     <!-- Fondo GRIS para indicar que está cerrado -->
     <solid android:color="#CCCCCC" />
-
-    <!-- Bordes redondeados iguales a tus botones normales -->
-    <corners android:radius="20dp" />
 
     <!-- Un borde un poco más oscuro para que se vea bien -->
     <stroke

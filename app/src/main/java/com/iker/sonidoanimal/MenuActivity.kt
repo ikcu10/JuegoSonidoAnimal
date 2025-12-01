@@ -31,7 +31,7 @@ class MenuActivity : AppCompatActivity() {
         val avatarElegido = prefs.getString("avatarGuardado", null)
         when (avatarElegido) {
             "oso" -> imgAvatar.setImageResource(R.drawable.avatar_oso)
-            "panda" -> imgAvatar.setImageResource(R.drawable.avatar_oso_panda)
+            "oso_panda" -> imgAvatar.setImageResource(R.drawable.avatar_oso_panda)
             "pinguino" -> imgAvatar.setImageResource(R.drawable.avatar_pinguino)
             "zorro" -> imgAvatar.setImageResource(R.drawable.avatar_zorro)
             "tigre" -> imgAvatar.setImageResource(R.drawable.avatar_tigre)
@@ -69,6 +69,7 @@ class MenuActivity : AppCompatActivity() {
                 // --- NIVEL BLOQUEADO (CANDADO) ---
                 button.isEnabled = false // NO se puede pulsar
                 button.text = "🔒" // Muestra el candado
+                button.textSize = 85f
                 button.setBackgroundResource(R.drawable.round_button_locked) // Fondo gris
                 button.alpha = 0.7f // Un poco transparente
             }

@@ -18,7 +18,7 @@ class LoginActivity : AppCompatActivity() {
         setContentView(R.layout.activity_login)
 
         val botonJugar = findViewById<Button>(R.id.boton_comenzar)
-        val botonMas = findViewById<Button>(R.id.boton_mas)
+        val botonMas = findViewById<android.widget.ImageButton>(R.id.boton_mas)
         val entradaNombre = findViewById<EditText>(R.id.entrada_nombre)
 
         // Esto se ejecuta cuando vuelves de elegir avatar
@@ -30,18 +30,28 @@ class LoginActivity : AppCompatActivity() {
                 if (animal != null) {
                     avatarSeleccionado = animal
 
-                    // Quitamos el texto "+"
-                    botonMas.text = ""
+                    // 1. ELIMINAR TEXTO: ImageButton no tiene propiedad .text, así que borramos esa línea.
 
-                    // Ponemos la imagen del animal en el botón
+                    // 2. CAMBIAR IMAGEN: Usamos setImageResource en vez de setBackgroundResource
                     when (animal) {
-                        "oso" -> botonMas.setBackgroundResource(R.drawable.avatar_oso)
-                        "oso_panda" -> botonMas.setBackgroundResource(R.drawable.avatar_oso_panda)
-                        "pinguino" -> botonMas.setBackgroundResource(R.drawable.avatar_pinguino)
-                        "zorro" -> botonMas.setBackgroundResource(R.drawable.avatar_zorro)
-                        "tigre" -> botonMas.setBackgroundResource(R.drawable.avatar_tigre)
-                        "leon" -> botonMas.setBackgroundResource(R.drawable.avatar_leon)
+                        "oso" -> botonMas.setImageResource(R.drawable.avatar_oso)
+                        "oso_panda" -> botonMas.setImageResource(R.drawable.avatar_oso_panda)
+                        "pinguino" -> botonMas.setImageResource(R.drawable.avatar_pinguino)
+                        "zorro" -> botonMas.setImageResource(R.drawable.avatar_zorro)
+                        "tigre" -> botonMas.setImageResource(R.drawable.avatar_tigre)
+                        "leon" -> botonMas.setImageResource(R.drawable.avatar_leon)
                     }
+
+                    // 2. BORRAMOS EL CÍRCULO DE FONDO
+                    // Esto hace que desaparezca la forma blanca/naranja y solo quede el animal
+                    botonMas.background = null
+
+                    // 3. QUITAMOS EL PADDING (Márgenes a 0)
+                    // Para que el animal ocupe todo el espacio posible y se vea grande
+                    botonMas.setPadding(10, 10, 10, 10)
+
+                    // (Opcional) Aseguramos que se escale bien
+                    botonMas.scaleType = android.widget.ImageView.ScaleType.FIT_CENTER
                 }
             }
         }

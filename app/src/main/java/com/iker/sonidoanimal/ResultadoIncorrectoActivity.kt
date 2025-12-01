@@ -17,7 +17,6 @@ class ResultadoIncorrectoActivity : AppCompatActivity() {
         val erroresPrevios = intent.getIntExtra("erroresPrevios", 0)
 
         val btnReintentar = findViewById<Button>(R.id.btnReintar)
-        val btnMenu = findViewById<Button>(R.id.btnMenu)
 
         btnReintentar.setOnClickListener {
             val listaFallos = intent.getIntegerArrayListExtra("listaFallos") ?: arrayListOf()
@@ -29,12 +28,6 @@ class ResultadoIncorrectoActivity : AppCompatActivity() {
 
             intent.putExtra("erroresPrevios", erroresPrevios)
 
-            startActivity(intent)
-            finish()
-        }
-
-        btnMenu.setOnClickListener {
-            val intent = Intent(this, MenuActivity::class.java)
             startActivity(intent)
             finish()
         }

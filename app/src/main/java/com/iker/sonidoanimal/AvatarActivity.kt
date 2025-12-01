@@ -18,11 +18,11 @@ class AvatarActivity : AppCompatActivity() {
         setContentView(R.layout.activity_avatar)
 
         val avatarOso = findViewById<ImageButton>(R.id.btnOso)
-        val avatarRata = findViewById<ImageButton>(R.id.btnRata)
+        val avatarOsoPanda = findViewById<ImageButton>(R.id.btnOsoPanda)
         val avatarPingu = findViewById<ImageButton>(R.id.btnPinguino)
         val avatarZorro = findViewById<ImageButton>(R.id.btnZorro)
-        val avatarConejo = findViewById<ImageButton>(R.id.btnConejo)
-        val avatarJirafa = findViewById<ImageButton>(R.id.btnJirafa)
+        val avatarTigre = findViewById<ImageButton>(R.id.btnTigre)
+        val avatarLeon = findViewById<ImageButton>(R.id.btnLeon)
 
         // Esta función devuelve el animal elegido a la pantalla anterior
         fun devolverAvatar(animal: String) {
@@ -33,11 +33,11 @@ class AvatarActivity : AppCompatActivity() {
         }
 
         avatarOso.setOnClickListener { devolverAvatar("oso") }
-        avatarRata.setOnClickListener { devolverAvatar("oso_panda") }
+        avatarOsoPanda.setOnClickListener { devolverAvatar("oso_panda") }
         avatarPingu.setOnClickListener { devolverAvatar("pinguino") }
         avatarZorro.setOnClickListener { devolverAvatar("zorro") }
-        avatarConejo.setOnClickListener { devolverAvatar("tigre") }
-        avatarJirafa.setOnClickListener { devolverAvatar("leon") }
+        avatarTigre.setOnClickListener { devolverAvatar("tigre") }
+        avatarLeon.setOnClickListener { devolverAvatar("leon") }
 
         val rootView = findViewById<android.view.View>(R.id.activity_main)
         ViewCompat.setOnApplyWindowInsetsListener(rootView) { v, insets ->
