@@ -27,7 +27,7 @@
             android:text="¿Cuál es tu nombre?"
             android:textSize="70dp"
             android:textColor="#5A4631"
-            android:layout_marginTop="130dp"
+            android:layout_marginTop="110dp"
             android:layout_marginBottom="20dp"
             android:fontFamily="@font/baloo2"
             android:textStyle="bold"/>
@@ -63,7 +63,6 @@
             android:id="@+id/boton_comenzar"
             android:layout_width="250dp"
             android:layout_height="100dp"
-            android:layout_gravity="center"
             android:background="@drawable/boton_inicio"
             app:backgroundTint="@null"
             android:text="¡Jugar!"

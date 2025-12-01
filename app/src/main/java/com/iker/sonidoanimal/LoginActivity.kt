@@ -13,15 +13,17 @@ class LoginActivity : AppCompatActivity() {
     // Variable para guardar qué animal eligió el usuario
     private var avatarSeleccionado: String? = null
 
+    // Método
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        // Llamada a método (vincula el xml con este código)
         setContentView(R.layout.activity_login)
-
+        // Declaración de Variables
         val botonJugar = findViewById<Button>(R.id.boton_comenzar)
         val botonMas = findViewById<android.widget.ImageButton>(R.id.boton_mas)
         val entradaNombre = findViewById<EditText>(R.id.entrada_nombre)
 
-        // Esto se ejecuta cuando vuelves de elegir avatar
+        // Esto se ejecuta cuando AvatarActivity termina y vuelve a LoginActivity, transformamos el botón redondo genérico en la cara del animal
         val launcherAvatar = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             if (result.resultCode == RESULT_OK) {
                 // Recuperamos el nombre del animal (ej: "oso")
@@ -42,12 +44,10 @@ class LoginActivity : AppCompatActivity() {
                         "leon" -> botonMas.setImageResource(R.drawable.avatar_leon)
                     }
 
-                    // 2. BORRAMOS EL CÍRCULO DE FONDO
-                    // Esto hace que desaparezca la forma blanca/naranja y solo quede el animal
+                    // BORRAMOS EL CÍRCULO DE FONDO
                     botonMas.background = null
 
-                    // 3. QUITAMOS EL PADDING (Márgenes a 0)
-                    // Para que el animal ocupe todo el espacio posible y se vea grande
+                    // Padding entre la imágen del animal y el botón
                     botonMas.setPadding(10, 10, 10, 10)
 
                     // (Opcional) Aseguramos que se escale bien
@@ -56,13 +56,15 @@ class LoginActivity : AppCompatActivity() {
             }
         }
 
-        // 1. BOTÓN MAS (+): Abre la selección de Avatar esperando respuesta
+        // Llamada a método
+        // 1. BOTÓN MAS (+): Abre la pantalla de seleccion, pero usando lo anterior para que espere la respuesta
         botonMas.setOnClickListener {
             val intent = Intent(this, AvatarActivity::class.java)
             launcherAvatar.launch(intent)
         }
 
-        // 2. BOTÓN JUGAR: Valida y nos lleva al MENÚ
+        // Lamada a método
+        // 2. BOTÓN JUGAR: Valida que todo está correcto (nobre y avatar), resetea el jeugo para que el nuevo jugador empiece limpio desde cero y te lleva a la siguiente pantalla
         botonJugar.setOnClickListener {
             val nombreUsuario = entradaNombre.text.toString().trim()
 

@@ -14,6 +14,7 @@ class AvatarActivity : AppCompatActivity() {
     @SuppressLint("MissingInflatedId")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        // Se puede borrar
         enableEdgeToEdge()
         setContentView(R.layout.activity_avatar)
 
@@ -39,6 +40,7 @@ class AvatarActivity : AppCompatActivity() {
         avatarTigre.setOnClickListener { devolverAvatar("tigre") }
         avatarLeon.setOnClickListener { devolverAvatar("leon") }
 
+        // Pone más padding por eso es posible que lo borre
         val rootView = findViewById<android.view.View>(R.id.activity_main)
         ViewCompat.setOnApplyWindowInsetsListener(rootView) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
