@@ -35,6 +35,8 @@ class JuegoAnimalesActivity : AppCompatActivity() {
 
     private var erroresNivel = 0
 
+    private var clicksAyuda = 0
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_sonido_animal)
@@ -67,6 +69,7 @@ class JuegoAnimalesActivity : AppCompatActivity() {
         }
 
         btnSound.setOnClickListener {
+            clicksAyuda++
             val sonidoNivel = getSoundForLevel(currentLevel)
             playAnimalSound(sonidoNivel)
         }
@@ -75,6 +78,8 @@ class JuegoAnimalesActivity : AppCompatActivity() {
     private fun setupLevel(level: Int) {
         SoundManager.stop()
         startTime = System.currentTimeMillis()
+
+        clicksAyuda = 0
 
         // --- RECUPERAR ERRORES (SI VIENE DE REINTENTAR) ---
         erroresNivel = intent.getIntExtra("erroresPrevios", 0)
@@ -226,7 +231,7 @@ class JuegoAnimalesActivity : AppCompatActivity() {
             editor.apply()
             // ---------------------------------------
 
-            guardarDatosDePartida(puntuacionFinal)
+            procesarFinDeNivel()
 
             Handler(Looper.getMainLooper()).postDelayed({
                                                             // --- CRUCE DE CAMINOS (FIN DEL JUEGO) ---
@@ -269,8 +274,6 @@ class JuegoAnimalesActivity : AppCompatActivity() {
             val listaFallos = intent.getIntegerArrayListExtra("listaFallos") ?: arrayListOf()
             listaFallos.add(selectedAnimal.id)
 
-            // Guardamos JSON (con lo que tiene seguro hasta ahora)
-            guardarDatosDePartida(puntuacionAcumuladaPrevia)
 
             Handler(Looper.getMainLooper()).postDelayed({
                 val intent = Intent(this@JuegoAnimalesActivity, ResultadoIncorrectoActivity::class.java)
@@ -286,25 +289,19 @@ class JuegoAnimalesActivity : AppCompatActivity() {
         }
     }
 
-    // Función que conecta con gestordatos
-    private fun guardarDatosDePartida(puntuacionAGuardar: Int) {
-        // 1. Calculamos cuánto tardó (Ahora - Inicio) en segundos
-        val tiempoFinal = (System.currentTimeMillis() - startTime) / 1000
-        val fechaActual = GestorDatos.obtenerFechaActual()
+    private fun procesarFinDeNivel() {
+        // 1. Calculamos cuánto tardó (en segundos)
+        val tiempoNivel = (System.currentTimeMillis() - startTime) / 1000
 
-        // 2. Empaquetamos todo en el molde Partida
-        val partida = Partida(
-            nombreNino = nombreNino,
+        // 2. Enviamos todos los datos al Gestor para que actualice el JSON
+        GestorDatos.registrarNivel(
+            context = this,
             nivel = currentLevel,
-            numeroPartida = numeroPartida,
-            tiempoSegundos = tiempoFinal,
+            duracionSegundos = tiempoNivel,
             errores = erroresNivel,
-            puntuacion = puntuacionAGuardar,
-            fechaHora = fechaActual
+            puntos = puntosEsteNivel,
+            clicksAyuda = clicksAyuda // Pasamos el contador de clicks
         )
-
-        // 3. Mandamos al obrero a escribir el archivo
-        GestorDatos.guardarPartida(this, partida)
     }
 
     private fun updateScoreDisplay() {

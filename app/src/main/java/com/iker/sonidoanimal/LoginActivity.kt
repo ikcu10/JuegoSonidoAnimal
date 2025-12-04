@@ -102,6 +102,8 @@ class LoginActivity : AppCompatActivity() {
             editor.putInt("numeroPartida", 1)
             editor.apply() // Confirmamos el guardado
 
+            GestorDatos.iniciarNuevaSesion(nombreUsuario)
+
             // SI TODO ESTÁ BIEN -> IR AL MENÚ
             val intent = Intent(this, MenuActivity::class.java)
             startActivity(intent)
