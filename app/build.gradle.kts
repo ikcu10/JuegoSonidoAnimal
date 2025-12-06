@@ -1,7 +1,7 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
-    id("com.chaquo.python")
+    id("com.chaquo.python") // Plugin de Python
 }
 
 android {
@@ -17,6 +17,7 @@ android {
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
+        // ESTO ES VITAL PARA CHAQUOPY (Reduce tamaño APK)
         ndk {
             abiFilters += listOf("arm64-v8a", "x86_64")
         }
@@ -28,35 +29,37 @@ android {
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
-                         )
+            )
         }
     }
+
+    // MANTENEMOS JAVA 11 (Igual que en tu rama que funciona)
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
     }
     kotlinOptions {
-        jvmTarget = "1.8"
+        jvmTarget = "11"
     }
-    buildToolsVersion = "36.1.0"
+
+    // He quitado 'buildToolsVersion' para que Gradle use la defecto y no falle.
 }
 
 chaquopy {
     defaultConfig {
         version = "3.8"
 
-        // Paquetes pip (opcional)ggg
+        // Paquetes pip
         pip {
             install("numpy")
             install("pandas")
-            install("matplotlib")
-            install("scikit-learn")
+            // install("matplotlib") // Opcional, si no haces gráficos quítalo para ir más rápido
+            // install("scikit-learn") // Opcional
         }
     }
 }
 
 dependencies {
-
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
