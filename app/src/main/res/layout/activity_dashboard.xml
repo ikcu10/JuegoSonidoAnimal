@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Análisis de Datos (Python)"
+            android:textSize="22sp"
+            android:textStyle="bold"
+            android:gravity="center"
+            android:layout_marginBottom="10dp"/>
+
+        <TextView
+            android:id="@+id/txt_metricas"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#E3F2FD"
+            android:padding="10dp"
+            android:text="Cargando datos..."
+            android:textSize="16sp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:text="1. Matriz de Confusión (Acierto/Fallos)"
+            android:textStyle="bold"/>
+        <ImageView
+            android:id="@+id/img_grafico1"
+            android:layout_width="match_parent"
+            android:layout_height="250dp"
+            android:scaleType="fitCenter"
+            android:background="#EEEEEE"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:text="2. Correlación Intentos/Puntos"
+            android:textStyle="bold"/>
+        <ImageView
+            android:id="@+id/img_grafico2"
+            android:layout_width="match_parent"
+            android:layout_height="250dp"
+            android:scaleType="fitCenter"
+            android:background="#EEEEEE"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:text="3. Niveles Alcanzados"
+            android:textStyle="bold"/>
+        <ImageView
+            android:id="@+id/img_grafico3"
+            android:layout_width="match_parent"
+            android:layout_height="250dp"
+            android:scaleType="fitCenter"
+            android:background="#EEEEEE"/>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="50dp"/>
+
+    </LinearLayout>
+</ScrollView>

@@ -53,6 +53,8 @@ chaquopy {
         pip {
             install("numpy")
             install("pandas")
+            install("matplotlib")
+            install("scikit-learn")
             // install("matplotlib") // Opcional, si no haces gráficos quítalo para ir más rápido
             // install("scikit-learn") // Opcional
         }
