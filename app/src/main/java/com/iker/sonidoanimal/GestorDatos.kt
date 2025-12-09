@@ -36,6 +36,18 @@ object GestorDatos {
         tiempoInicioSesion = System.currentTimeMillis()
     }
 
+    fun reiniciarPartida() {
+        // 1. Guardamos el nombre del usuario actual antes de borrar nada
+        val usuarioActual = sesionActual.username
+
+        // 2. Iniciamos una nueva sesión
+        // Esto automáticamente:
+        // - Borra la lista de niveles antigua
+        // - Crea un session_id NUEVO
+        // - Actualiza la fecha (date_time) al momento actual
+        iniciarNuevaSesion(usuarioActual)
+    }
+
     // -----------------------------------------------------------------------
     // 2. REGISTRAR UN NIVEL (Se llama desde JuegoAnimalesActivity al ganar)
     // -----------------------------------------------------------------------

@@ -18,6 +18,8 @@ class MainActivity : AppCompatActivity() {
             Python.start(AndroidPlatform(this))
         }
 
+
+
         // ---------------------------------------------------------
         // BOTÓN 1: JUGAR (Tu lógica original)
         // ---------------------------------------------------------

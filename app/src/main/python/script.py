@@ -1,137 +1,189 @@
 import pandas as pd
 import json
-import random
 import io
 import base64
 import numpy as np
+import os
+import glob
 from datetime import datetime, timedelta
+
+# Importamos la librería para conectar con Android
+from com.chaquo.python import Python
 
 # Gráficos
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
+import matplotlib.dates as mdates # <--- AÑADE ESTO ARRIBA DEL TODO
 
 # IA / Machine Learning
 from sklearn.model_selection import train_test_split
 from sklearn.tree import DecisionTreeClassifier
-# NUEVO: Importamos métricas avanzadas
-from sklearn.metrics import accuracy_score, precision_score, recall_score, confusion_matrix, ConfusionMatrixDisplay
+from sklearn.metrics import accuracy_score, precision_score, recall_score, confusion_matrix
 
-# ... (LAS FUNCIONES generar_datos_simulados Y aplanar_json SE QUEDAN IGUAL) ...
-# ... (CÓPIALAS DEL CÓDIGO ANTERIOR O DÉJALAS COMO ESTABAN) ...
-# Para ahorrar espacio, asumo que tienes generar_datos_simulados y aplanar_json aquí.
-# Si borraste todo, dímelo y te las pego enteras, pero son las mismas de antes.
+# =========================================================
+# 1. FUNCIÓN PARA APLANAR EL JSON Y CALCULAR PUNTOS
+# =========================================================
+def aplanar_json(data):
+    # En tus archivos JSON, los puntos están dentro de la lista "levels".
+    # Pandas no sabe sumar eso solo, así que lo hacemos aquí.
+    puntos_totales = 0
+    errores_totales = 0
 
-# ==========================================
-# GENERADOR DE DATOS (REPETIMOS BREVEMENTE PARA QUE EL SCRIPT FUNCIONE AL PEGAR)
-def generar_datos_simulados(n_sesiones=150):
-    datos = []
-    usuarios_fieles = ["Iker", "Maria", "GamerPro", "Luisa"]
-    usuarios_abandono = ["TestUser", "Carlos", "Juan", "Invitado"]
-    todos = usuarios_fieles + usuarios_abandono
-    for i in range(n_sesiones):
-        usuario_actual = random.choice(todos)
-        if usuario_actual in usuarios_fieles:
-            duracion = random.randint(120, 600)
-            nivel_max = random.randint(3, 5)
-            puntos_base = 100
-        else:
-            duracion = random.randint(10, 100)
-            nivel_max = random.randint(1, 2)
-            puntos_base = 0
-        sesion = {
-            "username": usuario_actual,
-            "session_id": f"sess_{1000 + i}",
-            "date_time": (datetime.now() - timedelta(days=random.randint(0, 30))).isoformat(),
-            "session_length": duracion,
-            "level_reached": nivel_max,
-            "levels": [],
-            "total_points": 0, "total_errors": 0 # Inicializamos
-        }
-        total_puntos = 0
-        for nivel in range(1, 6):
-            if nivel <= nivel_max:
-                pts = random.choice([0, 50, 100]) + puntos_base
-                if pts > 100: pts = 100
-                total_puntos += pts
-        sesion["total_points"] = total_puntos
-        datos.append(sesion)
-    return datos
+    # Sumamos los puntos de cada nivel si existe la lista
+    if "levels" in data and isinstance(data["levels"], list):
+        for nivel in data["levels"]:
+            puntos_totales += nivel.get("points_scored", 0)
+            errores_totales += nivel.get("errors", 0)
 
-def aplanar_json(json_data):
+    # Devolvemos una fila lista para el DataFrame
     return {
-        "username": json_data.get("username"),
-        "session_id": json_data["session_id"],
-        "session_length": json_data["session_length"],
-        "level_reached": json_data["level_reached"],
-        "total_points": json_data.get("total_points", 0)
+        "username": data.get("username"),
+        "session_id": data.get("session_id"),
+        "date_time": data.get("date_time"),
+        "session_length": data.get("session_length"),
+        "level_reached": data.get("level_reached"),
+        "total_points": puntos_totales,  # DATO CALCULADO (Vital para la IA)
+        "total_errors": errores_totales  # DATO CALCULADO
     }
 
+# =========================================================
+# 2. FUNCIÓN AUXILIAR PARA IMÁGENES (ALTA CALIDAD)
+# =========================================================
 def plot_to_base64():
     buffer = io.BytesIO()
-    plt.savefig(buffer, format='png', bbox_inches='tight')
+    # dpi=300 asegura que se vea nítido en la Tablet
+    plt.savefig(buffer, format='png', bbox_inches='tight', dpi=300)
     buffer.seek(0)
     img_str = base64.b64encode(buffer.getvalue()).decode('utf-8')
     buffer.close()
     plt.close()
     return img_str
 
-# ==========================================
-# PROCESO PRINCIPAL (MODIFICADO PARA CUMPLIR REQUISITOS)
-# ==========================================
+# =========================================================
+# 3. PROCESO PRINCIPAL (Lee del Storage -> Analiza -> Pinta)
+# =========================================================
 def procesar_datos_y_graficos():
     try:
-        # A. PREPARACIÓN
-        lista_raw = generar_datos_simulados(150)
-        datos_aplanados = [aplanar_json(d) for d in lista_raw]
+        # --- CONFIGURACIÓN VISUAL PARA TABLET ---
+        # Aumentamos el tamaño de la letra para que se lea bien en 10 pulgadas
+        plt.rcParams.update({'font.size': 14})
+
+        datos_cargados = []
+
+        # --- A. LECTURA DEL STORAGE (CUMPLIENDO REQUISITO) ---
+
+        # 1. Contexto de Android
+        context = Python.getPlatform().getApplication()
+
+        # 2. Ruta base (.../Android/data/com.iker.../files)
+        ruta_base = str(context.getExternalFilesDir(None))
+
+        # 3. Ruta completa a Documents donde están tus 100 archivos
+        ruta_completa = os.path.join(ruta_base, "Documents", "*.json")
+
+        # 4. Buscamos archivos
+        lista_archivos = glob.glob(ruta_completa)
+
+        # SEGURIDAD: Si no hay archivos, avisamos
+        if not lista_archivos:
+            return json.dumps({"error": f"No se encontraron datos en {ruta_base}/Documents. ¿Has ejecutado el generador de Kotlin?"})
+
+        # 5. Leemos archivo por archivo
+        for archivo in lista_archivos:
+            try:
+                with open(archivo, 'r') as f:
+                    contenido = json.load(f)
+                    datos_cargados.append(contenido)
+            except:
+                pass # Si uno falla, seguimos con los demás
+
+        # --- B. PROCESAMIENTO PANDAS & IA ---
+
+        # Convertimos a DataFrame
+        datos_aplanados = [aplanar_json(d) for d in datos_cargados]
         df = pd.DataFrame(datos_aplanados)
         df = df.dropna(subset=['username'])
 
-        # Etiqueta: Returning Player (1 si aparece >= 2 veces)
-        conteos = df['username'].value_counts()
-        df['returning_player'] = df['username'].apply(lambda x: 1 if conteos[x] >= 2 else 0)
+        # 2. Convertir tipos de datos (IMPORTANTE PARA EL EJERCICIO)
+        # Convertimos string de fecha a objeto datetime real
+        df['date_time'] = pd.to_datetime(df['date_time'])
+        # Convertimos segundos a minutos para que sea más legible
+        df['session_minutes'] = df['session_length'] / 60.0
 
-        # B. MODELO ML
+        # ETIQUETA 'RETURNING PLAYER'
+        # Si el nombre aparece > 1 vez en los archivos, es un usuario fiel (1)
+        conteos = df['username'].value_counts()
+        df['returning_player'] = df['username'].apply(lambda x: 1 if conteos[x] > 1 else 0)
+
+        # --- C. CÁLCULO DE MÉTRICAS GLOBALES (REQUISITO NUEVO) ---
+
+        # 1. Player Count (Total usuarios únicos)
+        total_unique_players = len(conteos)
+
+        # 2. Conteo de Fieles vs Turistas
+        # Filtramos cuantos usuarios tienen > 1 partida
+        returning_users_count = sum(conteos > 1)
+
+        # 3. Retention Rate (% de usuarios que vuelven)
+        # Fórmula: (Usuarios que repiten / Total usuarios únicos) * 100
+        if total_unique_players > 0:
+            retention_rate = (returning_users_count / total_unique_players) * 100
+        else:
+            retention_rate = 0.0
+
+        # 4. Churn Rate (% de usuarios que abandonan tras 1 sesión)
+        # Fórmula: 100% - Retention Rate
+        churn_rate = 100.0 - retention_rate
+
+        # 5. Average Session Length (Duración media en SEGUNDOS)
+        avg_session_seconds = df['session_length'].mean()
+
+        # 6. DAU (Daily Active Users) - Promedio
+        # Agrupamos por fecha (solo día, ignorando hora) y contamos usuarios únicos
+        df['date_only'] = df['date_time'].dt.date
+        dau_series = df.groupby('date_only')['username'].nunique()
+        avg_dau = dau_series.mean() # Promedio de usuarios por día
+
+        # ENTRENAMIENTO DEL MODELO
         features = ['session_length', 'level_reached', 'total_points']
         X = df[features]
         y = df['returning_player']
 
-        # Split y Entrenamiento
         X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
         modelo = DecisionTreeClassifier(max_depth=3)
         modelo.fit(X_train, y_train)
         predicciones = modelo.predict(X_test)
 
-        # --- NUEVO: CÁLCULO DE TODAS LAS MÉTRICAS SOLICITADAS ---
-        accuracy = accuracy_score(y_test, predicciones)
-        precision = precision_score(y_test, predicciones, zero_division=0)
-        recall = recall_score(y_test, predicciones, zero_division=0)
+        # Métricas (con seguridad por si el test es pequeño)
+        try:
+            acc = accuracy_score(y_test, predicciones)
+            prec = precision_score(y_test, predicciones, zero_division=0)
+            rec = recall_score(y_test, predicciones, zero_division=0)
+        except:
+            acc, prec, rec = 0.0, 0.0, 0.0
 
-        # --- C. GRÁFICOS ---
-        imagenes_base64 = {}
+        # --- C. GENERACIÓN DE GRÁFICOS (TAMAÑO TABLET) ---
+        imagenes = {}
 
-        # Gráfico 1: MATRIZ DE CONFUSIÓN (Método Manual Robusto)
-        plt.figure(figsize=(5, 4))
+        # Gráfico 1: Matriz de Confusión (Manual Robusto)
+        plt.figure(figsize=(12, 5)) # Tamaño grande
         cm = confusion_matrix(y_test, predicciones)
 
-        # 1. Dibujamos el cuadro de colores
         plt.imshow(cm, interpolation='nearest', cmap='Blues')
         plt.title('Matriz de Confusión')
         plt.colorbar()
 
-        # 2. Configuramos los Ejes (evitando el error de los ticks)
-        # Detectamos cuántas clases hay realmente en el test
         clases_reales = len(np.unique(y_test))
         tick_marks = np.arange(clases_reales)
         nombres = ["Abandona", "Vuelve"]
 
-        # Solo ponemos las etiquetas que existan
         plt.xticks(tick_marks, nombres[:clases_reales])
         plt.yticks(tick_marks, nombres[:clases_reales])
         plt.ylabel('Realidad')
         plt.xlabel('Predicción')
 
-        # 3. Escribimos los números dentro de los cuadros
         thresh = cm.max() / 2.
         for i in range(cm.shape[0]):
             for j in range(cm.shape[1]):
@@ -139,34 +191,87 @@ def procesar_datos_y_graficos():
                          horizontalalignment="center",
                          color="white" if cm[i, j] > thresh else "black")
 
-        imagenes_base64['confusion_matrix'] = plot_to_base64()
+        imagenes['confusion_matrix'] = plot_to_base64()
 
-        # Gráfico 2: Importancia de Variables (Obligatorio según texto)
+        # Gráfico 2: Importancia de Variables
+        plt.figure(figsize=(12, 5)) # Tamaño grande
         importancia = pd.Series(modelo.feature_importances_, index=features)
-        plt.figure(figsize=(6, 4))
         importancia.plot(kind='barh', color='purple')
         plt.title('Importancia de Variables')
-        imagenes_base64['feature_importance'] = plot_to_base64()
+        plt.tight_layout()
+        imagenes['feature_importance'] = plot_to_base64()
 
-        # Gráfico 3: Histograma (Distribución de datos)
-        plt.figure(figsize=(6, 4))
-        plt.hist(df['session_length'], bins=10, color='orange', edgecolor='black')
-        plt.title('Distribución Duración (Seg)')
-        imagenes_base64['hist_distribucion'] = plot_to_base64()
+        # --- SECCIÓN ANÁLISIS DATOS (4 Gráficos: 1 Antiguo + 3 Nuevos) ---
 
-        # D. RETORNO DE DATOS
+        # 3. Distribución Puntos (YA EXISTÍA, LO MANTENEMOS COMO "DISTRIBUCIÓN")
+        plt.figure(figsize=(12, 5))
+        plt.hist(df['total_points'], bins=10, color='green', edgecolor='black')
+        plt.title('Análisis: Distribución de Puntos')
+        plt.tight_layout()
+        imagenes['hist_distribucion'] = plot_to_base64()
+
+        # 4. Correlación (Scatter) - NUEVO
+        plt.figure(figsize=(12, 5))
+        plt.scatter(df['session_minutes'], df['total_points'], alpha=0.5, c='blue')
+        plt.title('Análisis: Correlación Tiempo vs Puntos')
+        plt.xlabel('Minutos')
+        plt.ylabel('Puntos')
+        plt.grid(True)
+        plt.tight_layout()
+        imagenes['scatter_corr'] = plot_to_base64()
+
+        # 5. Evolución (DAU) - NUEVO
+        plt.figure(figsize=(12, 5))
+
+        # Ordenamos por fecha
+        dau_sorted = dau_series.sort_index()
+
+        # Pintamos la línea roja con puntos
+        plt.plot(dau_sorted.index, dau_sorted.values, marker='o', color='red', linestyle='-', linewidth=2)
+
+        plt.title('6. Evolución de Jugadores Activos (DAU)')
+        plt.ylabel('Usuarios Únicos')
+        plt.xlabel('Fecha (Día/Mes)')
+        plt.grid(True, linestyle='--', alpha=0.7)
+
+        # --- TRUCO PARA MEJORAR LAS FECHAS ---
+        # 1. Definimos el formato: Día/Mes (ej: 21/11)
+        myFmt = mdates.DateFormatter('%d/%m')
+        plt.gca().xaxis.set_major_formatter(myFmt)
+
+        # 2. Rotamos las fechas automáticamente para que no se choquen
+        plt.gcf().autofmt_xdate()
+
+        plt.tight_layout()
+        imagenes['line_dau'] = plot_to_base64()
+
+        # 6. Abandono (Churn) - NUEVO
+        abandonos = df[df['returning_player'] == 0]
+        conteo_abandono = abandonos['level_reached'].value_counts().sort_index()
+        plt.figure(figsize=(12, 5))
+        conteo_abandono.plot(kind='bar', color='gray', edgecolor='black')
+        plt.title('Análisis: ¿Dónde abandonan?')
+        plt.xlabel('Nivel')
+        plt.tight_layout()
+        imagenes['bar_churn'] = plot_to_base64()
+
+        # D. RETORNO DE DATOS JSON
         resultado = {
             "metrics": {
                 "player_count": int(df['username'].nunique()),
-                "accuracy": round(accuracy, 2),
-                "precision": round(precision, 2), # NUEVO
-                "recall": round(recall, 2)        # NUEVO
+                "retention_rate": round(retention_rate, 2),     # NUEVO
+                "churn_rate": round(churn_rate, 2),             # NUEVO
+                "avg_session_sec": round(avg_session_seconds, 2), # NUEVO
+                "avg_dau": round(avg_dau, 2),
+                "accuracy": round(acc, 2),
+                "precision": round(prec, 2),
+                "recall": round(rec, 2)
             },
-            "charts": imagenes_base64
+            "charts": imagenes
         }
 
         return json.dumps(resultado)
 
     except Exception as e:
         import traceback
-        return json.dumps({"error": str(e)})
+        return json.dumps({"error": str(e) + "\n" + traceback.format_exc()})

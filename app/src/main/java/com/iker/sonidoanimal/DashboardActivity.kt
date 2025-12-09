@@ -17,17 +17,24 @@ class DashboardActivity : AppCompatActivity() {
         setContentView(R.layout.activity_dashboard)
 
         val txtMetricas = findViewById<TextView>(R.id.txt_metricas)
+
         val img1 = findViewById<ImageView>(R.id.img_grafico1)
         val img2 = findViewById<ImageView>(R.id.img_grafico2)
         val img3 = findViewById<ImageView>(R.id.img_grafico3)
+        val img4 = findViewById<ImageView>(R.id.img_grafico4)
+        val img5 = findViewById<ImageView>(R.id.img_grafico5)
+        val img6 = findViewById<ImageView>(R.id.img_grafico6)
 
         // Ejecutamos la carga de datos nada más abrir la pantalla
-        cargarDatosPython(txtMetricas, img1, img2, img3)
+        cargarDatosPython(txtMetricas, img1, img2, img3, img4, img5, img6)
     }
 
-    private fun cargarDatosPython(txt: TextView, i1: ImageView, i2: ImageView, i3: ImageView) {
+    private fun cargarDatosPython(txt: TextView,
+                                  i1: ImageView, i2: ImageView, i3: ImageView,
+                                  i4: ImageView, i5: ImageView, i6: ImageView) {
         try {
             val py = Python.getInstance()
+            // Asegúrate de que "script" es el nombre real de tu archivo .py
             val modulo = py.getModule("script")
 
             val resultadoJsonString = modulo.callAttr("procesar_datos_y_graficos").toString()
@@ -38,33 +45,67 @@ class DashboardActivity : AppCompatActivity() {
                 return
             }
 
-            // 1. Mostrar Métricas COMPLETAS (Según requisitos)
+            // 1. OBTENER MÉTRICAS (ANTIGUAS + NUEVAS)
             val metrics = json.getJSONObject("metrics")
+
+            // Datos básicos y de IA
             val jugadores = metrics.getInt("player_count")
             val acc = metrics.getDouble("accuracy")
             val prec = metrics.getDouble("precision")
             val rec = metrics.getDouble("recall")
 
-            txt.text = "📊 RESULTADOS DEL MODELO ML:\n\n" +
-                    "• Jugadores Únicos: $jugadores\n" +
-                    "-----------------------------\n" +
-                    "• Accuracy (Exactitud): ${(acc * 100).toInt()}%\n" +
-                    "• Precision: ${(prec * 100).toInt()}%\n" +
-                    "• Recall (Sensibilidad): ${(rec * 100).toInt()}%\n" +
-                    "-----------------------------\n" +
-                    "Interpretación visual abajo:"
+            // Datos Nuevos (Estadísticas de Negocio)
+            // Usamos optDouble por seguridad, por si alguno viene nulo
+            val retention = metrics.optDouble("retention_rate", 0.0)
+            val churn = metrics.optDouble("churn_rate", 0.0)
+            val avgSec = metrics.optDouble("avg_session_sec", 0.0)
+            val dau = metrics.optDouble("avg_dau", 0.0)
 
-            // 2. Mostrar Gráficos ACTUALIZADOS
+            // Cálculo visual: Segundos a Minutos
+            val avgMin = String.format("%.2f", avgSec / 60.0)
+
+
+            // 2. CONSTRUIR EL TEXTO PARA EL CUADRO AZUL
+            txt.text = """
+                📊 MÉTRICAS DE USUARIO:
+                
+                • Jugadores Totales: $jugadores
+                • Tasa de Retención: $retention%
+                • Tasa de Abandono: $churn%
+                • Usuarios/Día (DAU): $dau
+                • Tiempo Medio: $avgMin min
+                
+                -----------------------------
+                
+                🤖 RENDIMIENTO MODELO IA:
+                
+                • Accuracy (Exactitud): ${(acc * 100).toInt()}%
+                • Precision: ${(prec * 100).toInt()}%
+                • Recall (Sensibilidad): ${(rec * 100).toInt()}%
+                
+                -----------------------------
+                📝 GLOSARIO DE MÉTRICAS:
+                * Retención: % de usuarios que jugaron más de 1 vez.
+                * Abandono: % de usuarios que jugaron solo 1 vez.
+                * DAU: Promedio de usuarios únicos diarios.
+                * Accuracy: % de aciertos globales de la IA.
+                
+                (Gráficos visuales abajo 👇)
+            """.trimIndent()
+
+
+            // 3. MOSTRAR GRÁFICOS (Esto no cambia, sigue igual)
             val charts = json.getJSONObject("charts")
 
-            // Gráfico 1: Matriz de Confusión (NUEVO)
-            i1.setImageBitmap(convertirBase64(charts.getString("confusion_matrix")))
+            // IA (1 y 2)
+            if (charts.has("confusion_matrix")) i1.setImageBitmap(convertirBase64(charts.getString("confusion_matrix")))
+            if (charts.has("feature_importance")) i2.setImageBitmap(convertirBase64(charts.getString("feature_importance")))
 
-            // Gráfico 2: Importancia de Variables
-            i2.setImageBitmap(convertirBase64(charts.getString("feature_importance")))
-
-            // Gráfico 3: Distribución
-            i3.setImageBitmap(convertirBase64(charts.getString("hist_distribucion")))
+            // DATOS (3, 4, 5, 6) -> El 3 ya existía, 4,5,6 son nuevos
+            if (charts.has("hist_distribucion")) i3.setImageBitmap(convertirBase64(charts.getString("hist_distribucion")))
+            if (charts.has("scatter_corr")) i4.setImageBitmap(convertirBase64(charts.getString("scatter_corr")))
+            if (charts.has("line_dau")) i5.setImageBitmap(convertirBase64(charts.getString("line_dau")))
+            if (charts.has("bar_churn")) i6.setImageBitmap(convertirBase64(charts.getString("bar_churn")))
 
             Toast.makeText(this, "Informe generado correctamente", Toast.LENGTH_SHORT).show()
 

@@ -38,6 +38,8 @@ class ActivityPuntos : AppCompatActivity() {
             editor.putInt("numeroPartida", numeroPartidaActual + 1)
 
             editor.apply() // Guardamos cambios
+
+            GestorDatos.reiniciarPartida()
             // ----------------------------------
 
             // Volvemos al Menú (ahora aparecerá todo bloqueado menos el 1)

@@ -2,73 +2,144 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="16dp">
+    android:fillViewport="true"
+    android:padding="32dp">
 
     <LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:text="Análisis de Datos (Python)"
+        android:textSize="32sp"
+        android:textStyle="bold"
+        android:gravity="center"
+        android:layout_marginBottom="24dp"/>
+
+    <TextView
+        android:id="@+id/txt_metricas"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#E3F2FD"
+        android:padding="20dp"
+        android:text="Cargando datos..."
+        android:textSize="20sp"
+        android:lineSpacingExtra="4dp"/>
 
         <TextView
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Análisis de Datos (Python)"
-            android:textSize="22sp"
+            android:layout_marginTop="30dp"
+            android:background="#F3E5F5"
+            android:padding="8dp"
+            android:text="BLOQUE 1: INTELIGENCIA ARTIFICIAL"
+            android:textSize="18sp"
             android:textStyle="bold"
-            android:gravity="center"
-            android:layout_marginBottom="10dp"/>
+            android:textColor="#4A148C"/>
 
-        <TextView
-            android:id="@+id/txt_metricas"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="#E3F2FD"
-            android:padding="10dp"
-            android:text="Cargando datos..."
-            android:textSize="16sp" />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="40dp"
+        android:text="1. Matriz de Confusión"
+        android:textSize="22sp"
+        android:textStyle="bold"/>
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:text="1. Matriz de Confusión (Acierto/Fallos)"
-            android:textStyle="bold"/>
-        <ImageView
-            android:id="@+id/img_grafico1"
-            android:layout_width="match_parent"
-            android:layout_height="250dp"
-            android:scaleType="fitCenter"
-            android:background="#EEEEEE"/>
+    <ImageView
+        android:id="@+id/img_grafico1"
+        android:layout_width="match_parent"
+        android:layout_height="380dp"
+        android:scaleType="fitCenter"
+        android:layout_marginTop="16dp"/>
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:text="2. Correlación Intentos/Puntos"
-            android:textStyle="bold"/>
-        <ImageView
-            android:id="@+id/img_grafico2"
-            android:layout_width="match_parent"
-            android:layout_height="250dp"
-            android:scaleType="fitCenter"
-            android:background="#EEEEEE"/>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="40dp"
+        android:text="2. Importancia de Variables"
+        android:textSize="22sp"
+        android:textStyle="bold"/>
+
+    <ImageView
+        android:id="@+id/img_grafico2"
+        android:layout_width="match_parent"
+        android:layout_height="389dp"
+        android:scaleType="fitCenter"
+        android:layout_marginTop="16dp"/>
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:text="3. Niveles Alcanzados"
+            android:layout_marginTop="30dp"
+            android:background="#E8F5E9"
+            android:padding="8dp"
+            android:text="BLOQUE 2: VISUALIZACIÓN DE DATOS"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:textColor="#1B5E20"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:text="3. Distribución (Puntos)"
+            android:textSize="18sp"
             android:textStyle="bold"/>
         <ImageView
             android:id="@+id/img_grafico3"
             android:layout_width="match_parent"
-            android:layout_height="250dp"
+            android:layout_height="380dp"
             android:scaleType="fitCenter"
-            android:background="#EEEEEE"/>
+            android:layout_marginTop="5dp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:text="4. Correlación (Tiempo vs Puntos)"
+            android:textSize="18sp"
+            android:textStyle="bold"/>
+        <ImageView
+            android:id="@+id/img_grafico4"
+            android:layout_width="match_parent"
+            android:layout_height="380dp"
+            android:scaleType="fitCenter"
+            android:layout_marginTop="5dp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:text="5. Evolución Diaria (DAU)"
+            android:textSize="18sp"
+            android:textStyle="bold"/>
+        <ImageView
+            android:id="@+id/img_grafico5"
+            android:layout_width="match_parent"
+            android:layout_height="380dp"
+            android:scaleType="fitCenter"
+            android:layout_marginTop="5dp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:text="6. Puntos de Abandono (Churn)"
+            android:textSize="18sp"
+            android:textStyle="bold"/>
+        <ImageView
+            android:id="@+id/img_grafico6"
+            android:layout_width="match_parent"
+            android:layout_height="380dp"
+            android:scaleType="fitCenter"
+            android:layout_marginTop="5dp"/>
 
         <View
             android:layout_width="match_parent"
-            android:layout_height="50dp"/>
+            android:layout_height="100dp"/>
 
-    </LinearLayout>
+</LinearLayout>
 </ScrollView>

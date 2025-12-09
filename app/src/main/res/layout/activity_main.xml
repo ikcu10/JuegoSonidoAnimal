@@ -21,24 +21,25 @@
     <!-- Botón centrado -->
     <Button
         android:id="@+id/boton_comenzar"
-        android:layout_width="310dp"
-        android:layout_height="140dp"
+        android:layout_width="370dp"
+        android:layout_height="150dp"
+        android:layout_marginTop="180dp"
         android:layout_gravity="center"
         android:background="@drawable/boton_inicio"
         app:backgroundTint="@null"
         android:text="¡Jugar!"
         android:textColor="#FFFFFF"
-        android:textSize="70sp"
+        android:textSize="80sp"
         android:fontFamily="@font/potta_one"/>
 
     <Button
         android:id="@+id/boton_ir_dashboard"
-        android:layout_width="400dp"
-        android:layout_height="140dp"
-        android:layout_marginTop="40dp"
+        android:layout_width="370dp"
+        android:layout_height="100dp"
+        android:layout_marginTop="100dp"
         android:background="@drawable/boton_inicio"
         app:backgroundTint="@null"
-        android:text="Estadísticas"
+        android:text="Métricas"
         android:textColor="#FFFFFF"
         android:textSize="50sp"
         android:fontFamily="@font/potta_one"/>
