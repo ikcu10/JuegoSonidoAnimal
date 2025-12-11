@@ -12,30 +12,20 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        // 1. Inicializar Python (OBLIGATORIO)
-        // Lo iniciamos aquí para que esté listo en toda la app
+        // 1. Inicializar Python
         if (!Python.isStarted()) {
             Python.start(AndroidPlatform(this))
         }
 
-
-
-        // ---------------------------------------------------------
-        // BOTÓN 1: JUGAR (Tu lógica original)
-        // ---------------------------------------------------------
+        // BOTÓN 1: JUGAR
         val botonComenzar = findViewById<Button>(R.id.boton_comenzar)
         botonComenzar.setOnClickListener {
             val intent = Intent(this, LoginActivity::class.java)
             startActivity(intent)
         }
 
-        // ---------------------------------------------------------
-        // BOTÓN 2: ESTADÍSTICAS (El que faltaba)
-        // ---------------------------------------------------------
-        // Buscamos el botón nuevo por su ID del XML
+        // BOTÓN 2: ESTADÍSTICAS
         val botonDashboard = findViewById<Button>(R.id.boton_ir_dashboard)
-
-        // Le decimos que al hacer click, abra la DashboardActivity
         botonDashboard.setOnClickListener {
             val intent = Intent(this, DashboardActivity::class.java)
             startActivity(intent)

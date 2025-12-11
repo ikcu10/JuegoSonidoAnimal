@@ -11,10 +11,8 @@ class MenuActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_menu)
-        // La configuración la hacemos en onResume para que se actualice al volver de jugar
     }
 
-    // Usamos onResume para refrescar los candados cada vez que la pantalla aparece
     override fun onResume() {
         super.onResume()
         setupMenu()
@@ -24,10 +22,8 @@ class MenuActivity : AppCompatActivity() {
         val imgAvatar = findViewById<ImageView>(R.id.imgAvatar)
         val prefs = getSharedPreferences("MisPreferencias", MODE_PRIVATE)
 
-        // 1. RECUPERAMOS EL PROGRESO (Por defecto nivel 1 desbloqueado)
         val maxNivelDesbloqueado = prefs.getInt("nivelDesbloqueado", 1)
 
-        // Cargar Avatar (Tu código de siempre)
         val avatarElegido = prefs.getString("avatarGuardado", null)
         when (avatarElegido) {
             "oso" -> imgAvatar.setImageResource(R.drawable.avatar_oso)
@@ -57,21 +53,21 @@ class MenuActivity : AppCompatActivity() {
         )
 
         botones.forEachIndexed { index, button ->
-            val nivelBoton = index + 1 // El botón 0 es el Nivel 1
+            val nivelBoton = index + 1
 
             if (nivelBoton <= maxNivel) {
-                // --- NIVEL DESBLOQUEADO (NORMAL) ---
-                button.isEnabled = true // Se puede pulsar
-                button.text = nivelBoton.toString() // Muestra el número "1", "2"...
-                button.setBackgroundResource(R.drawable.round_button) // Fondo blanco original
-                button.alpha = 1.0f // Totalmente visible
+                // NIVEL DESBLOQUEADO
+                button.isEnabled = true
+                button.text = nivelBoton.toString()
+                button.setBackgroundResource(R.drawable.round_button)
+                button.alpha = 1.0f
             } else {
-                // --- NIVEL BLOQUEADO (CANDADO) ---
-                button.isEnabled = false // NO se puede pulsar
-                button.text = "🔒" // Muestra el candado
+                // NIVEL BLOQUEADO
+                button.isEnabled = false
+                button.text = "🔒"
                 button.textSize = 85f
-                button.setBackgroundResource(R.drawable.round_button_locked) // Fondo gris
-                button.alpha = 0.7f // Un poco transparente
+                button.setBackgroundResource(R.drawable.round_button_locked)
+                button.alpha = 0.7f
             }
 
             button.setOnClickListener {

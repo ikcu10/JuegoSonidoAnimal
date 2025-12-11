@@ -25,11 +25,10 @@ class JuegoAnimalesActivity : AppCompatActivity() {
     private var currentLevel = 1
     private var isInteractionEnabled = true
 
-    // Variables nuevas para estadísticas
     private var startTime: Long = 0
-    private var nombreNino: String = "Jugador" // Valor por defecto
+    private var nombreNino: String = "Jugador"
 
-    private var numeroPartida = 1
+    //private var numeroPartida = 1
     private var puntuacionAcumuladaPrevia = 0
     private var puntosEsteNivel = 100
 
@@ -47,7 +46,6 @@ class JuegoAnimalesActivity : AppCompatActivity() {
     }
 
     private fun setupViews() {
-        //recyclerView = findViewById(R.id.recyclerViewAnimals)
         contenedorAnimales = findViewById(R.id.contenedorAnimales)
         tvQuestion = findViewById(R.id.texto_pregunta)
         progressBar = findViewById(R.id.barra_progreso)
@@ -58,9 +56,6 @@ class JuegoAnimalesActivity : AppCompatActivity() {
         val prefs = getSharedPreferences("MisPreferencias", MODE_PRIVATE)
         nombreNino = prefs.getString("nombreNino", "Jugador") ?: "Jugador"
 
-        numeroPartida = prefs.getInt("numeroPartida", 1)
-        // Si es el Nivel 1, reseteamos la cuenta a 0.
-        // Si es otro nivel, leemos cuántos puntos llevamos acumulados.
         if (currentLevel == 1) {
             puntuacionAcumuladaPrevia = 0
             prefs.edit().putInt("puntosTotales", 0).apply()
@@ -81,10 +76,9 @@ class JuegoAnimalesActivity : AppCompatActivity() {
 
         clicksAyuda = 0
 
-        // --- RECUPERAR ERRORES (SI VIENE DE REINTENTAR) ---
+        // RECUPERAR ERRORES
         erroresNivel = intent.getIntExtra("erroresPrevios", 0)
 
-        // Calculamos cuánto vale el premio ahora mismo
         if (erroresNivel == 0) {
             puntosEsteNivel = 100
         } else if (erroresNivel == 1) {
@@ -95,8 +89,6 @@ class JuegoAnimalesActivity : AppCompatActivity() {
             puntosEsteNivel = 0
         }
 
-        // --- VISUALIZACIÓN ---
-        // Mostramos SOLO lo que tiene seguro. No sumamos el premio todavía.
         tvScore.text = "Puntos: $puntuacionAcumuladaPrevia"
 
         isInteractionEnabled = true
@@ -215,7 +207,7 @@ class JuegoAnimalesActivity : AppCompatActivity() {
     private fun handleAnimalSelection(selectedAnimal: Animal, allAnimals: List<Animal>, cardView: CardView) {
         val context = this
         if (selectedAnimal.isCorrect) {
-            // --- ACIERTO ---
+            // ACIERTO
             cardView.setCardBackgroundColor(ContextCompat.getColor(context, R.color.correct_color))
             cardView.isEnabled = false
             playAnimalSound(selectedAnimal.soundRes)
@@ -224,24 +216,23 @@ class JuegoAnimalesActivity : AppCompatActivity() {
             val puntuacionFinal = puntuacionAcumuladaPrevia + puntosEsteNivel
 
             tvScore.text = "Puntos: $puntuacionFinal"
-            // Como ha ganado, guardamos el total en memoria para el siguiente nivel
+
             val prefs = getSharedPreferences("MisPreferencias", MODE_PRIVATE)
             val editor = prefs.edit()
             editor.putInt("puntosTotales", puntuacionFinal)
             editor.apply()
-            // ---------------------------------------
 
             procesarFinDeNivel()
 
             Handler(Looper.getMainLooper()).postDelayed({
-                                                            // --- CRUCE DE CAMINOS (FIN DEL JUEGO) ---
+
                                                             if (currentLevel == 10) {
-                                                                // Si es el nivel 10, vamos a la pantalla final
+
                                                                 val intent = Intent(this@JuegoAnimalesActivity, ActivityPuntos::class.java)
                                                                 startActivity(intent)
                                                                 finish()
                                                             } else {
-                                                                // Si no, seguimos jugando normal
+
                                                                 val intent = Intent(this@JuegoAnimalesActivity, ResultadoCorrectoActivity::class.java)
                                                                 intent.putExtra("nivel", currentLevel)
                                                                 startActivity(intent)
@@ -251,10 +242,9 @@ class JuegoAnimalesActivity : AppCompatActivity() {
                                                         }, 2000)
 
         } else {
-            // --- ERROR (FALLO) ---
+            // FALLO
             erroresNivel++
 
-            // REGLA: 100 -> 50 -> 25 -> 0
             if (erroresNivel == 1) {
                 puntosEsteNivel = 50
             } else if (erroresNivel == 2) {
@@ -263,8 +253,6 @@ class JuegoAnimalesActivity : AppCompatActivity() {
                 puntosEsteNivel = 0
             }
 
-            // NOTA: NO cambiamos tvScore. Sigue viendo sus puntos seguros.
-            // Simplemente sabe que cuando gane, ganará menos.
 
             cardView.setCardBackgroundColor(ContextCompat.getColor(context, R.color.wrong_color))
             cardView.isEnabled = false
