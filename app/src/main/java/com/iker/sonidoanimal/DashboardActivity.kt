@@ -34,7 +34,7 @@ class DashboardActivity : AppCompatActivity() {
                                   i4: ImageView, i5: ImageView, i6: ImageView) {
         try {
             val py = Python.getInstance()
-            // Asegúrate de que "script" es el nombre real de tu archivo .py
+
             val modulo = py.getModule("script")
 
             val resultadoJsonString = modulo.callAttr("procesar_datos_y_graficos").toString()
@@ -45,7 +45,7 @@ class DashboardActivity : AppCompatActivity() {
                 return
             }
 
-            // 1. OBTENER MÉTRICAS (ANTIGUAS + NUEVAS)
+            // 1. OBTENER MÉTRICAS
             val metrics = json.getJSONObject("metrics")
 
             // Datos básicos y de IA
@@ -61,11 +61,9 @@ class DashboardActivity : AppCompatActivity() {
             val avgSec = metrics.optDouble("avg_session_sec", 0.0)
             val dau = metrics.optDouble("avg_dau", 0.0)
 
-            // Cálculo visual: Segundos a Minutos
             val avgMin = String.format("%.2f", avgSec / 60.0)
 
 
-            // 2. CONSTRUIR EL TEXTO PARA EL CUADRO AZUL
             txt.text = """
                 📊 MÉTRICAS DE USUARIO:
                 
@@ -83,25 +81,18 @@ class DashboardActivity : AppCompatActivity() {
                 • Precision: ${(prec * 100).toInt()}%
                 • Recall (Sensibilidad): ${(rec * 100).toInt()}%
                 
-                -----------------------------
-                📝 GLOSARIO DE MÉTRICAS:
-                * Retención: % de usuarios que jugaron más de 1 vez.
-                * Abandono: % de usuarios que jugaron solo 1 vez.
-                * DAU: Promedio de usuarios únicos diarios.
-                * Accuracy: % de aciertos globales de la IA.
-                
                 (Gráficos visuales abajo 👇)
             """.trimIndent()
 
 
-            // 3. MOSTRAR GRÁFICOS (Esto no cambia, sigue igual)
+            // 3. MOSTRAR GRÁFICOS
             val charts = json.getJSONObject("charts")
 
-            // IA (1 y 2)
+            // IA
             if (charts.has("confusion_matrix")) i1.setImageBitmap(convertirBase64(charts.getString("confusion_matrix")))
             if (charts.has("feature_importance")) i2.setImageBitmap(convertirBase64(charts.getString("feature_importance")))
 
-            // DATOS (3, 4, 5, 6) -> El 3 ya existía, 4,5,6 son nuevos
+            // DATOS
             if (charts.has("hist_distribucion")) i3.setImageBitmap(convertirBase64(charts.getString("hist_distribucion")))
             if (charts.has("scatter_corr")) i4.setImageBitmap(convertirBase64(charts.getString("scatter_corr")))
             if (charts.has("line_dau")) i5.setImageBitmap(convertirBase64(charts.getString("line_dau")))

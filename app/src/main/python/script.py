@@ -14,45 +14,36 @@ from com.chaquo.python import Python
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
-import matplotlib.dates as mdates # <--- AÑADE ESTO ARRIBA DEL TODO
+import matplotlib.dates as mdates
 
 # IA / Machine Learning
 from sklearn.model_selection import train_test_split
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.metrics import accuracy_score, precision_score, recall_score, confusion_matrix
 
-# =========================================================
-# 1. FUNCIÓN PARA APLANAR EL JSON Y CALCULAR PUNTOS
-# =========================================================
+# 1. APLANAR EL JSON Y CALCULAR PUNTOS
 def aplanar_json(data):
-    # En tus archivos JSON, los puntos están dentro de la lista "levels".
-    # Pandas no sabe sumar eso solo, así que lo hacemos aquí.
     puntos_totales = 0
     errores_totales = 0
 
-    # Sumamos los puntos de cada nivel si existe la lista
     if "levels" in data and isinstance(data["levels"], list):
         for nivel in data["levels"]:
             puntos_totales += nivel.get("points_scored", 0)
             errores_totales += nivel.get("errors", 0)
 
-    # Devolvemos una fila lista para el DataFrame
     return {
         "username": data.get("username"),
         "session_id": data.get("session_id"),
         "date_time": data.get("date_time"),
         "session_length": data.get("session_length"),
         "level_reached": data.get("level_reached"),
-        "total_points": puntos_totales,  # DATO CALCULADO (Vital para la IA)
-        "total_errors": errores_totales  # DATO CALCULADO
+        "total_points": puntos_totales,
+        "total_errors": errores_totales
     }
 
-# =========================================================
-# 2. FUNCIÓN AUXILIAR PARA IMÁGENES (ALTA CALIDAD)
-# =========================================================
+# 2. FUNCIÓN IMÁGENES
 def plot_to_base64():
     buffer = io.BytesIO()
-    # dpi=300 asegura que se vea nítido en la Tablet
     plt.savefig(buffer, format='png', bbox_inches='tight', dpi=300)
     buffer.seek(0)
     img_str = base64.b64encode(buffer.getvalue()).decode('utf-8')
@@ -60,69 +51,52 @@ def plot_to_base64():
     plt.close()
     return img_str
 
-# =========================================================
-# 3. PROCESO PRINCIPAL (Lee del Storage -> Analiza -> Pinta)
-# =========================================================
+# 3. PROCESO PRINCIPAL
 def procesar_datos_y_graficos():
     try:
-        # --- CONFIGURACIÓN VISUAL PARA TABLET ---
-        # Aumentamos el tamaño de la letra para que se lea bien en 10 pulgadas
         plt.rcParams.update({'font.size': 14})
-
         datos_cargados = []
 
-        # --- A. LECTURA DEL STORAGE (CUMPLIENDO REQUISITO) ---
-
-        # 1. Contexto de Android
+        # A. LECTURA DEL STORAGE
         context = Python.getPlatform().getApplication()
-
-        # 2. Ruta base (.../Android/data/com.iker.../files)
         ruta_base = str(context.getExternalFilesDir(None))
-
-        # 3. Ruta completa a Documents donde están tus 100 archivos
         ruta_completa = os.path.join(ruta_base, "Documents", "*.json")
-
-        # 4. Buscamos archivos
         lista_archivos = glob.glob(ruta_completa)
 
-        # SEGURIDAD: Si no hay archivos, avisamos
+        # SEGURIDAD
         if not lista_archivos:
             return json.dumps({"error": f"No se encontraron datos en {ruta_base}/Documents. ¿Has ejecutado el generador de Kotlin?"})
 
-        # 5. Leemos archivo por archivo
+        # Leemos archivo por archivo
         for archivo in lista_archivos:
             try:
                 with open(archivo, 'r') as f:
                     contenido = json.load(f)
                     datos_cargados.append(contenido)
             except:
-                pass # Si uno falla, seguimos con los demás
+                pass
 
-        # --- B. PROCESAMIENTO PANDAS & IA ---
+        # B. PROCESAMIENTO PANDAS y IA
 
         # Convertimos a DataFrame
         datos_aplanados = [aplanar_json(d) for d in datos_cargados]
         df = pd.DataFrame(datos_aplanados)
         df = df.dropna(subset=['username'])
 
-        # 2. Convertir tipos de datos (IMPORTANTE PARA EL EJERCICIO)
-        # Convertimos string de fecha a objeto datetime real
+        # Convertir tipos de datos
         df['date_time'] = pd.to_datetime(df['date_time'])
-        # Convertimos segundos a minutos para que sea más legible
         df['session_minutes'] = df['session_length'] / 60.0
 
         # ETIQUETA 'RETURNING PLAYER'
-        # Si el nombre aparece > 1 vez en los archivos, es un usuario fiel (1)
         conteos = df['username'].value_counts()
         df['returning_player'] = df['username'].apply(lambda x: 1 if conteos[x] > 1 else 0)
 
-        # --- C. CÁLCULO DE MÉTRICAS GLOBALES (REQUISITO NUEVO) ---
+        # C. CÁLCULO DE MÉTRICAS GLOBALES
 
         # 1. Player Count (Total usuarios únicos)
         total_unique_players = len(conteos)
 
         # 2. Conteo de Fieles vs Turistas
-        # Filtramos cuantos usuarios tienen > 1 partida
         returning_users_count = sum(conteos > 1)
 
         # 3. Retention Rate (% de usuarios que vuelven)
@@ -133,14 +107,12 @@ def procesar_datos_y_graficos():
             retention_rate = 0.0
 
         # 4. Churn Rate (% de usuarios que abandonan tras 1 sesión)
-        # Fórmula: 100% - Retention Rate
         churn_rate = 100.0 - retention_rate
 
         # 5. Average Session Length (Duración media en SEGUNDOS)
         avg_session_seconds = df['session_length'].mean()
 
         # 6. DAU (Daily Active Users) - Promedio
-        # Agrupamos por fecha (solo día, ignorando hora) y contamos usuarios únicos
         df['date_only'] = df['date_time'].dt.date
         dau_series = df.groupby('date_only')['username'].nunique()
         avg_dau = dau_series.mean() # Promedio de usuarios por día
@@ -156,7 +128,7 @@ def procesar_datos_y_graficos():
         modelo.fit(X_train, y_train)
         predicciones = modelo.predict(X_test)
 
-        # Métricas (con seguridad por si el test es pequeño)
+        # Métricas
         try:
             acc = accuracy_score(y_test, predicciones)
             prec = precision_score(y_test, predicciones, zero_division=0)
@@ -164,10 +136,12 @@ def procesar_datos_y_graficos():
         except:
             acc, prec, rec = 0.0, 0.0, 0.0
 
-        # --- C. GENERACIÓN DE GRÁFICOS (TAMAÑO TABLET) ---
+        # GENERACIÓN DE GRÁFICOS
         imagenes = {}
 
-        # Gráfico 1: Matriz de Confusión (Manual Robusto)
+        # IA
+
+        # Gráfico 1: Matriz de Confusión
         plt.figure(figsize=(12, 5)) # Tamaño grande
         cm = confusion_matrix(y_test, predicciones)
 
@@ -194,23 +168,23 @@ def procesar_datos_y_graficos():
         imagenes['confusion_matrix'] = plot_to_base64()
 
         # Gráfico 2: Importancia de Variables
-        plt.figure(figsize=(12, 5)) # Tamaño grande
+        plt.figure(figsize=(12, 5))
         importancia = pd.Series(modelo.feature_importances_, index=features)
         importancia.plot(kind='barh', color='purple')
         plt.title('Importancia de Variables')
         plt.tight_layout()
         imagenes['feature_importance'] = plot_to_base64()
 
-        # --- SECCIÓN ANÁLISIS DATOS (4 Gráficos: 1 Antiguo + 3 Nuevos) ---
+        # SECCIÓN ANÁLISIS DATOS
 
-        # 3. Distribución Puntos (YA EXISTÍA, LO MANTENEMOS COMO "DISTRIBUCIÓN")
+        # 3. Distribución Puntos
         plt.figure(figsize=(12, 5))
         plt.hist(df['total_points'], bins=10, color='green', edgecolor='black')
         plt.title('Análisis: Distribución de Puntos')
         plt.tight_layout()
         imagenes['hist_distribucion'] = plot_to_base64()
 
-        # 4. Correlación (Scatter) - NUEVO
+        # 4. Correlación
         plt.figure(figsize=(12, 5))
         plt.scatter(df['session_minutes'], df['total_points'], alpha=0.5, c='blue')
         plt.title('Análisis: Correlación Tiempo vs Puntos')
@@ -220,7 +194,7 @@ def procesar_datos_y_graficos():
         plt.tight_layout()
         imagenes['scatter_corr'] = plot_to_base64()
 
-        # 5. Evolución (DAU) - NUEVO
+        # 5. Evolución
         plt.figure(figsize=(12, 5))
 
         # Ordenamos por fecha
@@ -234,18 +208,17 @@ def procesar_datos_y_graficos():
         plt.xlabel('Fecha (Día/Mes)')
         plt.grid(True, linestyle='--', alpha=0.7)
 
-        # --- TRUCO PARA MEJORAR LAS FECHAS ---
-        # 1. Definimos el formato: Día/Mes (ej: 21/11)
+        # Definimos el formato: Día/Mes
         myFmt = mdates.DateFormatter('%d/%m')
         plt.gca().xaxis.set_major_formatter(myFmt)
 
-        # 2. Rotamos las fechas automáticamente para que no se choquen
+        # Rotamos las fechas
         plt.gcf().autofmt_xdate()
 
         plt.tight_layout()
         imagenes['line_dau'] = plot_to_base64()
 
-        # 6. Abandono (Churn) - NUEVO
+        # 6. Abandono (Churn)
         abandonos = df[df['returning_player'] == 0]
         conteo_abandono = abandonos['level_reached'].value_counts().sort_index()
         plt.figure(figsize=(12, 5))
